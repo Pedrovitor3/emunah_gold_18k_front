@@ -1,228 +1,173 @@
 /**
- * Componente Header
+ * Componente Header com navegação e logout
  * Emunah Gold 18K - Frontend
  */
 
-import React, { useState } from 'react';
-import { Layout, Menu, Badge, Button, Drawer, Space, Typography, Avatar } from 'antd';
+import React from 'react';
+import { Layout, Menu, Dropdown, Avatar, Space, Typography, Button } from 'antd';
 import { 
-  ShoppingCartOutlined, 
   UserOutlined, 
-  MenuOutlined,
-  LoginOutlined,
-  LogoutOutlined,
+  LogoutOutlined, 
+  CrownOutlined,
   HomeOutlined,
-  AppstoreOutlined
-} from '@ant-design/icons';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+  ShoppingOutlined,
+  ShoppingCartOutlined,
+  ProfileOutlined
+} from '@ant-design/icons'
+import { useNavigate, useLocation } from 'react-router-dom';
+import type { MenuProps } from 'antd';
 import { useAuth } from '../../contexts/AuthContext';
-import { useCart } from '../../contexts/CartContext';
 
 const { Header: AntHeader } = Layout;
 const { Text } = Typography;
 
 const Header: React.FC = () => {
-  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const { user, logout } = useAuth();
-  const { itemCount } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+    if (key === 'logout') {
+      logout();
+    } else {
+      navigate(key);
+    }
   };
 
-  const menuItems = [
+  const userMenuItems: MenuProps['items'] = [
     {
-      key: '/',
-      icon: <HomeOutlined />,
-      label: <Link to="/">Início</Link>,
-    },
-    {
-      key: '/products',
-      icon: <AppstoreOutlined />,
-      label: <Link to="/products">Produtos</Link>,
-    },
-  ];
-
-  const userMenuItems = user ? [
-    {
-      key: 'profile',
+      key: '/perfil',
       icon: <UserOutlined />,
-      label: 'Minha Conta',
-      onClick: () => navigate('/profile'),
+      label: 'Meu Perfil',
+    },
+    {
+      key: '/pedidos',
+      icon: <ProfileOutlined />,
+      label: 'Meus Pedidos',
+    },
+    {
+      type: 'divider',
     },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Sair',
-      onClick: handleLogout,
+      danger: true,
     },
-  ] : [
+  ];
+
+  const mainMenuItems: MenuProps['items'] = [
     {
-      key: 'login',
-      icon: <LoginOutlined />,
-      label: 'Entrar',
-      onClick: () => navigate('/login'),
+      key: '/',
+      icon: <HomeOutlined />,
+      label: 'Início',
+    },
+    {
+      key: '/produtos',
+      icon: <ShoppingOutlined />,
+      label: 'Produtos',
+    },
+    {
+      key: '/carrinho',
+      icon: <ShoppingCartOutlined />,
+      label: 'Carrinho',
     },
   ];
 
   return (
     <AntHeader 
       style={{ 
-        background: '#ffffff',
-        borderBottom: '1px solid #f0f0f0',
         padding: '0 24px',
-        position: 'sticky',
-        top: 0,
-        zIndex: 1000,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+        background: '#fff',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
       }}
     >
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        width: '100%'
-      }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <Typography.Title 
-              level={3} 
-              style={{ 
-                margin: 0, 
-                color: '#d4af37',
-                fontWeight: 'bold',
-                fontSize: '24px'
-              }}
-            >
-              Emunah Gold 18K
-            </Typography.Title>
-          </Link>
-        </div>
-
-        {/* Menu Desktop */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <div className="desktop-menu" style={{ display: 'none' }}>
-            <Menu
-              mode="horizontal"
-              selectedKeys={[location.pathname]}
-              items={menuItems}
-              style={{ 
-                border: 'none',
-                background: 'transparent',
-                fontSize: '16px'
-              }}
-            />
-          </div>
-
-          {/* Ações do usuário */}
-          <Space size="middle">
-            {/* Carrinho */}
-            <Badge count={itemCount} size="small">
-              <Button
-                type="text"
-                icon={<ShoppingCartOutlined style={{ fontSize: '20px' }} />}
-                onClick={() => navigate('/cart')}
-                style={{ 
-                  border: 'none',
-                  boxShadow: 'none',
-                  color: '#666'
-                }}
-              />
-            </Badge>
-
-            {/* Usuário */}
-            {user ? (
-              <Space>
-                <Avatar 
-                  icon={<UserOutlined />} 
-                  style={{ backgroundColor: '#d4af37' }}
-                />
-                <Text strong style={{ color: '#666' }}>
-                  {user.first_name}
-                </Text>
-                <Button
-                  type="text"
-                  icon={<LogoutOutlined />}
-                  onClick={handleLogout}
-                  style={{ color: '#666' }}
-                >
-                  Sair
-                </Button>
-              </Space>
-            ) : (
-              <Button
-                type="primary"
-                icon={<LoginOutlined />}
-                onClick={() => navigate('/login')}
-                style={{ 
-                  backgroundColor: '#d4af37',
-                  borderColor: '#d4af37',
-                  borderRadius: '6px'
-                }}
-              >
-                Entrar
-              </Button>
-            )}
-
-            {/* Menu Mobile */}
-            <Button
-              className="mobile-menu-button"
-              type="text"
-              icon={<MenuOutlined />}
-              onClick={() => setMobileMenuVisible(true)}
-              style={{ 
-                display: 'none',
-                color: '#666'
-              }}
-            />
-          </Space>
-        </div>
+      {/* Logo */}
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          cursor: 'pointer' 
+        }}
+        onClick={() => navigate('/')}
+      >
+        <CrownOutlined 
+          style={{ 
+            fontSize: '32px', 
+            color: '#d4af37',
+            marginRight: '12px'
+          }} 
+        />
+        <Text 
+          strong 
+          style={{ 
+            fontSize: '20px',
+            color: '#2c3e50'
+          }}
+        >
+          Emunah Gold 18K
+        </Text>
       </div>
 
-      {/* Drawer para menu mobile */}
-      <Drawer
-        title="Menu"
-        placement="right"
-        onClose={() => setMobileMenuVisible(false)}
-        open={mobileMenuVisible}
-        width={280}
-      >
+      {/* Menu de navegação - Desktop */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
         <Menu
-          mode="vertical"
+          mode="horizontal"
           selectedKeys={[location.pathname]}
-          items={[...menuItems, ...userMenuItems]}
-          style={{ border: 'none' }}
+          items={mainMenuItems}
+          onClick={handleMenuClick}
+          style={{
+            border: 'none',
+            background: 'transparent',
+            fontSize: '16px'
+          }}
+          className="desktop-menu"
         />
-      </Drawer>
 
-      <style>{`
-        @media (min-width: 768px) {
-          .desktop-menu {
-            display: block !important;
+        {/* Dropdown do usuário */}
+        <Dropdown
+          menu={{ items: userMenuItems, onClick: handleMenuClick }}
+          trigger={['click']}
+          placement="bottomRight"
+        >
+          <Button
+            type="text"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px 12px',
+              height: 'auto',
+              borderRadius: '8px'
+            }}
+          >
+            <Space>
+              <Avatar 
+                size="small" 
+                icon={<UserOutlined />}
+                style={{ backgroundColor: '#d4af37' }}
+              />
+              <Text>
+                {user?.first_name} {user?.last_name}
+              </Text>
+            </Space>
+          </Button>
+        </Dropdown>
+      </div>
+
+      <style>
+        {`
+          @media (max-width: 768px) {
+            .desktop-menu {
+              display: none !important;
+            }
           }
-          .mobile-menu-button {
-            display: none !important;
-          }
-        }
-        
-        @media (max-width: 767px) {
-          .desktop-menu {
-            display: none !important;
-          }
-          .mobile-menu-button {
-            display: inline-flex !important;
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </AntHeader>
   );
 };
 
 export default Header;
-

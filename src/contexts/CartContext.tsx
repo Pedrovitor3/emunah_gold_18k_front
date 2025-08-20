@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CartItem, Product, CartContextType } from '../types';
+import { Product, CartItem, CartContextType } from '../types';
 import { message } from 'antd';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,7 +42,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       const existingItem = currentItems.find(item => item.product_id === product.id);
       
       if (existingItem) {
-        // Se o item já existe, atualiza a quantidade
+        // Se já existe, aumenta a quantidade
         const updatedItems = currentItems.map(item =>
           item.product_id === product.id
             ? { ...item, quantity: item.quantity + quantity }
@@ -51,10 +51,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         message.success(`${product.name} - quantidade atualizada no carrinho`);
         return updatedItems;
       } else {
-        // Se é um novo item, adiciona ao carrinho
+        // Se não existe, adiciona novo item
         const newItem: CartItem = {
-          id: `temp_${Date.now()}`, // ID temporário para o frontend
-          user_id: '', // Será preenchido quando integrar com o backend
+          id: `cart_${Date.now()}`, // ID temporário para o frontend
+          user_id: '', // Será preenchido quando sincronizar com backend
           product_id: product.id,
           quantity,
           created_at: new Date().toISOString(),
@@ -72,11 +72,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
    */
   const removeItem = (productId: string): void => {
     setItems(currentItems => {
-      const item = currentItems.find(item => item.product_id === productId);
-      if (item?.product) {
-        message.info(`${item.product.name} removido do carrinho`);
+      const filteredItems = currentItems.filter(item => item.product_id !== productId);
+      const removedItem = currentItems.find(item => item.product_id === productId);
+      if (removedItem) {
+        message.info(`${removedItem.product?.name} removido do carrinho`);
       }
-      return currentItems.filter(item => item.product_id !== productId);
+      return filteredItems;
     });
   };
 
@@ -89,7 +90,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return;
     }
 
-    setItems(currentItems =>
+    setItems(currentItems => 
       currentItems.map(item =>
         item.product_id === productId
           ? { ...item, quantity, updated_at: new Date().toISOString() }
@@ -110,7 +111,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
    * Calcular total do carrinho
    */
   const total = items.reduce((sum, item) => {
-    return sum + (item.product?.price || 0) * item.quantity;
+    const price = item.product?.price || 0;
+    return sum + (price * item.quantity);
   }, 0);
 
   /**
@@ -125,7 +127,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     updateQuantity,
     clearCart,
     total,
-    itemCount,
+    itemCount
   };
 
   return (
@@ -145,4 +147,3 @@ export const useCart = (): CartContextType => {
   }
   return context;
 };
-
