@@ -9,9 +9,6 @@ import Home from './pages/Home';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/RegisterUser';
 import ProtectedRoute from './components/protectedRoute';
-// Import suas outras páginas aqui
-// import ProductsPage from './pages/ProductsPage';
-// etc...
 
 const App: React.FC = () => {
   return (
