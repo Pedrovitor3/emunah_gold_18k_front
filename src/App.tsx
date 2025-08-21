@@ -1,113 +1,58 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import ptBR from 'antd/locale/pt_BR';
+
+// Contexts
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import MainLayout from './components/Layout/Main';
-import Home from './pages/Home';
-import LoginPage from './pages/Login';
-import RegisterPage from './pages/RegisterUser';
-import ProtectedRoute from './components/ProtectedRoute';
+
+// Routes
+import { routes } from './routes';
+
+// Tema do Ant Design
+const theme = {
+  token: {
+    colorPrimary: '#d4af37',
+    borderRadius: 12,
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    boxShadow: '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+  },
+  components: {
+    Card: {
+      borderRadiusLG: 20,
+    },
+    Input: {
+      borderRadius: 12,
+      paddingInline: 16,
+      paddingBlock: 12,
+    },
+    Button: {
+      borderRadius: 12,
+      fontWeight: 600,
+    },
+  },
+};
+
+// Criar o router com as rotas centralizadas
+const router = createBrowserRouter([
+  ...routes,
+  // Rota catch-all para redirecionar para home
+  {
+    path: '*',
+    element: <Navigate to="/" replace />,
+  },
+]);
 
 const App: React.FC = () => {
   return (
-    <ConfigProvider 
-      locale={ptBR}
-      theme={{
-        token: {
-          colorPrimary: '#d4af37',
-          borderRadius: 8,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
-        },
-      }}
-    >
+    <ConfigProvider locale={ptBR} theme={theme}>
       <AuthProvider>
         <CartProvider>
-          <Router>
-            <Routes>
-              {/* Rotas públicas */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              
-              {/* Rotas protegidas */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <MainLayout>
-                      <Home />
-                    </MainLayout>
-                  </ProtectedRoute>
-                }
-              />
-            
-            <Route
-              path="/produtos"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    {/* Substitua por sua ProductsPage */}
-                    <div style={{ padding: '20px', textAlign: 'center' }}>
-                      <h1>Produtos</h1>
-                      <p>Página de produtos protegida.</p>
-                    </div>
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route
-              path="/perfil"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    {/* Substitua por sua ProfilePage */}
-                    <div style={{ padding: '20px', textAlign: 'center' }}>
-                      <h1>Meu Perfil</h1>
-                      <p>Página de perfil protegida.</p>
-                    </div>
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/carrinho"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    {/* Substitua por sua CartPage */}
-                    <div style={{ padding: '20px', textAlign: 'center' }}>
-                      <h1>Carrinho</h1>
-                      <p>Página do carrinho protegida.</p>
-                    </div>
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/pedidos"
-              element={
-                <ProtectedRoute>
-                  <MainLayout>
-                    {/* Substitua por sua OrdersPage */}
-                    <div style={{ padding: '20px', textAlign: 'center' }}>
-                      <h1>Meus Pedidos</h1>
-                      <p>Página de pedidos protegida.</p>
-                    </div>
-                  </MainLayout>
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Redirecionar rotas não encontradas */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
+      </AuthProvider>
     </ConfigProvider>
   );
 };
