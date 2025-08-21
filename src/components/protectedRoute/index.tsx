@@ -1,8 +1,3 @@
-/**
- * Componente de rota protegida
- * Emunah Gold 18K - Frontend
- */
-
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { Spin } from 'antd';

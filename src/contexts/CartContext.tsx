@@ -1,7 +1,3 @@
-/**
- * Contexto do carrinho de compras
- * Emunah Gold 18K - Frontend
- */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product, CartItem, CartContextType } from '../types';

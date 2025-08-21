@@ -1,8 +1,3 @@
-/**
- * Componente Header com navegação e logout
- * Emunah Gold 18K - Frontend
- */
-
 import React from 'react';
 import { Layout, Menu, Dropdown, Avatar, Space, Typography, Button } from 'antd';
 import { 

@@ -1,7 +1,3 @@
-/**
- * Contexto de autenticação
- * Emunah Gold 18K - Frontend
- */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, RegisterData } from '../types';

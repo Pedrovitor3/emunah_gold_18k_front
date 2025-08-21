@@ -1,8 +1,3 @@
-/**
- * Layout principal da aplicação
- * Emunah Gold 18K - Frontend
- */
-
 import React from 'react';
 import { Layout } from 'antd';
 import Header from './Header';

@@ -1,7 +1,3 @@
-/**
- * Página de rastreamento de pedidos
- * Emunah Gold 18K - Frontend
- */
 
 import React, { useState } from 'react';
 import { 

@@ -1,7 +1,3 @@
-/**
- * Página inicial
- * Emunah Gold 18K - Frontend
- */
 
 import React, { useEffect, useState } from 'react';
 import { 

@@ -1,7 +1,3 @@
-/**
- * Página de Login
- * Emunah Gold 18K - Frontend
- */
 
 import React from 'react';
 import { Form, Input, Button, Card, Typography, Row, Col, Divider, Space } from 'antd';

@@ -1,7 +1,4 @@
-/**
- * Página de Registro
- * Emunah Gold 18K - Frontend
- */
+
 
 import React from 'react';
 import { Form, Input, Button, Card, Typography, Row, Col, Divider } from 'antd';

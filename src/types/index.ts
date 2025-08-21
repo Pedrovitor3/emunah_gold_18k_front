@@ -1,7 +1,4 @@
-/**
- * Tipos TypeScript para o frontend
- * Emunah Gold 18K
- */
+
 
 export interface User {
   id: string;

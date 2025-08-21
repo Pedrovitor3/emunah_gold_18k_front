@@ -1,7 +1,4 @@
-/**
- * Rota independente para Login
- * Emunah Gold 18K - Frontend
- */
+
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';

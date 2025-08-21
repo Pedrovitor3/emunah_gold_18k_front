@@ -1,7 +1,4 @@
-/**
- * Página de checkout
- * Emunah Gold 18K - Frontend
- */
+
 
 import React, { useState, useEffect } from 'react';
 import { 

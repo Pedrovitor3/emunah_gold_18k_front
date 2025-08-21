@@ -1,8 +1,3 @@
-/**
- * Componente Footer
- * Emunah Gold 18K - Frontend
- */
-
 import React from 'react';
 import { Layout, Row, Col, Typography, Space, Divider } from 'antd';
 import { 

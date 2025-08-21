@@ -1,7 +1,4 @@
-/**
- * Serviço de API
- * Emunah Gold 18K - Frontend
- */
+
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { 
