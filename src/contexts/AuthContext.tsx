@@ -1,8 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, RegisterData } from '../types';
-import apiService from '../services/api';
 import { message } from 'antd';
+import { loginService, registerService } from '../services/authService';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setLoading(true);
-      const response = await apiService.login(email, password);
+      const response = await loginService(email, password);
       
       // Salvar no estado
       setUser(response.user);
@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (userData: RegisterData): Promise<void> => {
     try {
       setLoading(true);
-      const response = await apiService.register(userData);
+      const response = await registerService(userData);
       
       // Salvar no estado
       setUser(response.user);

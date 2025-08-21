@@ -18,9 +18,9 @@ import {
   CreditCardOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Product } from '../types';
-import apiService from '../services/api';
-import { useCart } from '../contexts/CartContext';
+import { Product } from '../../types';
+import { useCart } from '../../contexts/CartContext';
+import { getFeaturedProducts } from '../../services/productService';
 
 const { Title, Paragraph, Text } = Typography;
 const { Meta } = Card;
@@ -37,7 +37,7 @@ const Home: React.FC = () => {
 
   const loadFeaturedProducts = async () => {
     try {
-      const products = await apiService.getFeaturedProducts(6);
+      const products = await getFeaturedProducts(6);
       setFeaturedProducts(products);
     } catch (error) {
       message.error('Erro ao carregar produtos em destaque');

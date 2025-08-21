@@ -19,7 +19,7 @@ import {
   CheckCircleOutlined,
   TruckOutlined
 } from '@ant-design/icons';
-import apiService from '../services/api';
+import { getTrackingInfo } from '../../services/trackingService';
 
 const { Title, Text } = Typography;
 
@@ -56,7 +56,7 @@ const Tracking: React.FC = () => {
     setSearched(true);
     
     try {
-      const response = await apiService.getTrackingInfo(trackingCode.trim());
+      const response = await getTrackingInfo(trackingCode.trim());
       setTrackingInfo(response);
     } catch (error: any) {
       message.error(error.message || 'Código de rastreamento não encontrado');

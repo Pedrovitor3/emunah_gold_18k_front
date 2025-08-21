@@ -25,9 +25,9 @@ import {
   CheckCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../contexts/CartContext';
-import { useAuth } from '../contexts/AuthContext';
-import apiService from '../services/api';
+import { useCart } from '../../contexts/CartContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { confirmPayment, createOrder } from '../../services/ordersService';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
@@ -99,7 +99,7 @@ const Checkout: React.FC = () => {
         zip_code: values.zip_code.replace(/\D/g, '')
       };
 
-      const orderResponse = await apiService.createOrder({
+      const orderResponse = await createOrder({
         payment_method: paymentMethod,
         shipping_address: shippingAddress,
         notes: values.notes
@@ -126,7 +126,7 @@ const Checkout: React.FC = () => {
 
     setLoading(true);
     try {
-      await apiService.confirmPayment(orderData.orderId);
+      await confirmPayment(orderData.orderId);
       message.success('Pagamento confirmado com sucesso!');
       setShowPixModal(false);
       navigate(`/orders/${orderData.orderId}`);

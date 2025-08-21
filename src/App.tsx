@@ -4,11 +4,11 @@ import { ConfigProvider } from 'antd';
 import ptBR from 'antd/locale/pt_BR';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import MainLayout from './components/Layout/MainLayout';
+import MainLayout from './components/Layout/Main';
 import Home from './pages/Home';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/RegisterUser';
-import ProtectedRoute from './components/protectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
   return (

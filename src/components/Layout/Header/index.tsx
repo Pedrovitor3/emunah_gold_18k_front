@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { MenuProps } from 'antd';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const { Header: AntHeader } = Layout;
 const { Text } = Typography;
