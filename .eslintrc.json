@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "react/prop-types": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "off",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "prettier/prettier": [
+      "off",
+      {
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "es5",
+        "printWidth": 100
+      }
+    ]
+  }
+}

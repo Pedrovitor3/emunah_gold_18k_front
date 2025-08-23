@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Row,
@@ -12,88 +12,39 @@ import {
   Rate,
   Badge,
   Image,
-  Divider,
   Empty,
   Pagination,
 } from 'antd';
 import {
-  SearchOutlined,
   ShoppingCartOutlined,
   HeartOutlined,
   FilterOutlined,
-  StarFilled,
+
 } from '@ant-design/icons';
+import type { ProductInterface } from '../../interface/ProductInterface';
+import { getProducts } from '../../services/productService';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
-// Mock data para produtos
-const mockProducts = [
-  {
-    id: 1,
-    name: 'iPhone 15 Pro Max',
-    price: 7999.90,
-    originalPrice: 8999.90,
-    image: 'https://images.unsplash.com/photo-1696446702061-95c0d5ae964e?w=400',
-    rating: 4.8,
-    reviews: 234,
-    category: 'smartphones',
-    brand: 'Apple',
-    discount: 11,
-    inStock: true,
-    description: 'O iPhone mais poderoso já criado com chip A17 Pro e sistema de câmeras revolucionário.',
-  },
-  {
-    id: 2,
-    name: 'MacBook Air M3',
-    price: 9999.90,
-    originalPrice: 10999.90,
-    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400',
-    rating: 4.9,
-    reviews: 156,
-    category: 'laptops',
-    brand: 'Apple',
-    discount: 9,
-    inStock: true,
-    description: 'Ultrabook com chip M3, design ultrafino e bateria que dura o dia todo.',
-  },
-  {
-    id: 3,
-    name: 'AirPods Pro 2ª Geração',
-    price: 1899.90,
-    originalPrice: 2099.90,
-    image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400',
-    rating: 4.7,
-    reviews: 89,
-    category: 'audio',
-    brand: 'Apple',
-    discount: 10,
-    inStock: false,
-    description: 'Cancelamento ativo de ruído de última geração e áudio espacial.',
-  },
-  {
-    id: 4,
-    name: 'iPad Pro 12.9"',
-    price: 6999.90,
-    originalPrice: 7499.90,
-    image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400',
-    rating: 4.8,
-    reviews: 67,
-    category: 'tablets',
-    brand: 'Apple',
-    discount: 7,
-    inStock: true,
-    description: 'iPad Pro com chip M2, tela Liquid Retina XDR e compatibilidade com Apple Pencil.',
-  },
-];
-
 const ProductsPage: React.FC = () => {
+  const [products, setProducts] = useState<ProductInterface[]>([])
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
+
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const loadProducts = async () =>{
+    const response = await getProducts()
+    console.log(response.data)
+    setProducts(response.data)
+  };
 
   const categories = [
     { value: 'all', label: 'Todas as Categorias' },
@@ -110,9 +61,9 @@ const ProductsPage: React.FC = () => {
     { value: 'rating', label: 'Melhor Avaliação' },
   ];
 
-  const filteredProducts = mockProducts.filter(product => {
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || product.category.name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -176,7 +127,7 @@ const ProductsPage: React.FC = () => {
         <Title level={5} style={{ marginBottom: 8, color: '#1a1a1a' }}>
           {product.name}
         </Title>
-        
+
         <Paragraph
           style={{ color: '#666', fontSize: 13, marginBottom: 12 }}
           ellipsis={{ rows: 2 }}
