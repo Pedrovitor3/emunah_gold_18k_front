@@ -1,14 +1,17 @@
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Badge, Button, Card, Image, Rate, Space, Tag, Typography } from "antd";
 import type { ProductInterface } from "../../interface/ProductInterface";
+import type React from "react";
 const { Title, Text, Paragraph } = Typography;
 
 const ProductCard: React.FC<{ product: ProductInterface }> = ({ product }) => {
 
-  const productHasStock = product.stock_quantity < 0;
+  const productHasStock = product.stock_quantity <    0;
 
   const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
+
+  return new Intl.NumberFormat('pt-BR',
+    {
     style: 'currency',
     currency: 'BRL',
   }).format(price);

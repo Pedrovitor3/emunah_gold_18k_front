@@ -1,8 +1,8 @@
 import React from 'react';
 import { Layout, Row, Col, Typography, Space, Divider } from 'antd';
-import { 
-  PhoneOutlined, 
-  MailOutlined, 
+import {
+  PhoneOutlined,
+  MailOutlined,
   EnvironmentOutlined,
   InstagramOutlined,
   FacebookOutlined,
@@ -14,14 +14,14 @@ const { Title, Text, Link } = Typography;
 
 const Footer: React.FC = () => {
   return (
-    <AntFooter style={{ 
-      background: '#1a1a1a', 
+    <AntFooter style={{
+      background: '#1a1a1a',
       color: '#ffffff',
       padding: '48px 24px 24px'
     }}>
-      <div style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto' 
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto'
       }}>
         <Row gutter={[32, 32]}>
           {/* Informações da empresa */}
@@ -30,27 +30,27 @@ const Footer: React.FC = () => {
               Emunah Gold 18K
             </Title>
             <Text style={{ color: '#cccccc', lineHeight: '1.6' }}>
-              Especialistas em joias de ouro 18K com qualidade excepcional e 
+              Especialistas em joias de ouro 18K com qualidade excepcional e
               designs únicos. Tradição e elegância em cada peça.
             </Text>
             <div style={{ marginTop: '16px' }}>
               <Space size="middle">
-                <Link 
-                  href="https://instagram.com" 
+                <Link
+                  href="https://instagram.com"
                   target="_blank"
                   style={{ color: '#d4af37', fontSize: '20px' }}
                 >
                   <InstagramOutlined />
                 </Link>
-                <Link 
-                  href="https://facebook.com" 
+                <Link
+                  href="https://facebook.com"
                   target="_blank"
                   style={{ color: '#d4af37', fontSize: '20px' }}
                 >
                   <FacebookOutlined />
                 </Link>
-                <Link 
-                  href="https://wa.me/5511999999999" 
+                <Link
+                  href="https://wa.me/5511999999999"
                   target="_blank"
                   style={{ color: '#d4af37', fontSize: '20px' }}
                 >
