@@ -1,4 +1,5 @@
-import type { ProductImageInterface } from "./ProductInterfaceInterface";
+import type CategoryInterface from "./CategoryInterface";
+import type { ProductImageInterface } from "./ProductImageInterface";
 
 export interface ProductInterface {
   id: string;
@@ -14,14 +15,6 @@ export interface ProductInterface {
   featured: boolean;
   created_at: string;
   updated_at: string;
-  category: {
-    id: string;
-    name: string;
-    description: string;
-    slug: string;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-  };
+  category: CategoryInterface;
   images: ProductImageInterface[];
 }

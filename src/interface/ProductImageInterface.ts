@@ -7,4 +7,3 @@ export interface ProductImageInterface{
   sort_order:number;
   created_at:string;
 }
-            
