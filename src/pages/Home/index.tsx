@@ -9,8 +9,9 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
-import { getFeaturedProducts } from '../../services/productService';
 import type { ProductInterface } from '../../interface/ProductInterface';
+import { getFeaturedProducts } from '../../services/productService';
+import { ROUTES } from '../../routes/routes';
 
 const { Title, Paragraph, Text } = Typography;
 const { Meta } = Card;
@@ -87,7 +88,7 @@ const Home: React.FC = () => {
             <Button
               type="primary"
               size="large"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate(ROUTES.PRODUCTS)}
               style={{
                 backgroundColor: '#d4af37',
                 borderColor: '#d4af37',
@@ -101,7 +102,7 @@ const Home: React.FC = () => {
             </Button>
             <Button
               size="large"
-              onClick={() => navigate('/about')}
+              onClick={() => navigate('/sobre')} // Mantenha assim ou adicione às constantes
               style={{
                 height: '48px',
                 padding: '0 32px',
@@ -186,7 +187,7 @@ const Home: React.FC = () => {
                       <Button
                         key="view-details"
                         type="link"
-                        onClick={() => navigate(`/products/${product.id}`)}
+                        onClick={() => navigate(`${ROUTES.PRODUCTS}/${product.id}`)}
                       >
                         Ver Detalhes
                       </Button>,
@@ -231,7 +232,7 @@ const Home: React.FC = () => {
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
             <Button
               size="large"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate(ROUTES.PRODUCTS)}
               style={{
                 height: '48px',
                 padding: '0 32px',

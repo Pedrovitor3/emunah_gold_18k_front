@@ -3,9 +3,9 @@ import { Card, Row, Col, Input, Select, Typography, Empty, Pagination } from 'an
 import { FilterOutlined } from '@ant-design/icons';
 import type { ProductInterface } from '../../interface/ProductInterface';
 import { getProducts } from '../../services/productService';
-import ProductCard from '../../components/Card/ProductCard';
 import { getCategories } from '../../services/categoryService';
 import CategoryInterface from '../../interface/CategoryInterface';
+import ProductCard from '../../components/Card/ProductCard.ts';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;

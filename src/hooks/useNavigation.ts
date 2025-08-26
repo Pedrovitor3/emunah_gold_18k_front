@@ -1,6 +1,7 @@
 // hooks/useNavigation.ts
 import { useNavigate, useLocation } from 'react-router-dom';
-import { RouteNames, ROUTES } from '../routes';
+import { ROUTES, type RouteNames } from '../routes/routes';
+
 export const useAppNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,8 +41,18 @@ export const useAppNavigation = () => {
     navigateTo(ROUTES.ORDERS);
   };
 
+  // Nova função para navegar para detalhes do produto
+  const goToProductDetail = (productId: string | number) => {
+    navigate(`${ROUTES.PRODUCTS}/${productId}`);
+  };
+
   const isCurrentRoute = (route: RouteNames): boolean => {
     return location.pathname === route;
+  };
+
+  // Verifica se está numa página de produto específica
+  const isProductDetailRoute = (): boolean => {
+    return location.pathname.startsWith(ROUTES.PRODUCTS) && location.pathname.split('/').length > 2;
   };
 
   return {
@@ -56,9 +67,11 @@ export const useAppNavigation = () => {
     goToProfile,
     goToCart,
     goToOrders,
+    goToProductDetail, // Nova função
 
     // Utilitários
     isCurrentRoute,
+    isProductDetailRoute, // Nova função
     currentPath: location.pathname,
 
     // Constantes das rotas

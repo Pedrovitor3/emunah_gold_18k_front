@@ -1,16 +1,19 @@
-// routes/index.ts
+// routes/index.ts - Adicione a rota de detalhes do produto
+
 import React from 'react';
 import { RouteObject } from 'react-router-dom';
 // Componentes auxiliares (devem ficar antes de qualquer código)
 import MainLayout from '../components/Layout/Main';
 import ProtectedRoute from '../components/ProtectedRoute';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { ROUTES } from './routes';
 
 // Lazy loading das páginas para melhor performance
 const Home = React.lazy(() => import('../pages/Home'));
 const LoginPage = React.lazy(() => import('../pages/Login'));
 const RegisterPage = React.lazy(() => import('../pages/RegisterUser'));
 const ProductsPage = React.lazy(() => import('../pages/Products'));
+const ProductDetail = React.lazy(() => import('../pages/ProductDetail')); // Nova importação
 const ProfilePage = React.lazy(() => import('../pages/Profile'));
 const CartPage = React.lazy(() => import('../pages/Cart'));
 const OrdersPage = React.lazy(() => import('../pages/Orders'));
@@ -33,7 +36,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 export const routes: RouteObject[] = [
   // Rotas públicas
   {
-    path: '/login',
+    path: ROUTES.LOGIN,
     element: (
       <PublicRoute>
         <LoginPage />
@@ -41,7 +44,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/register',
+    path: ROUTES.REGISTER,
     element: (
       <PublicRoute>
         <RegisterPage />
@@ -51,7 +54,7 @@ export const routes: RouteObject[] = [
 
   // Rotas protegidas
   {
-    path: '/',
+    path: ROUTES.HOME,
     element: (
       <ProtectedLayoutRoute>
         <Home />
@@ -59,7 +62,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/produtos',
+    path: ROUTES.PRODUCTS,
     element: (
       <ProtectedLayoutRoute>
         <ProductsPage />
@@ -67,7 +70,15 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/perfil',
+    path: `${ROUTES.PRODUCTS}/:id`, // Nova rota para detalhes do produto
+    element: (
+      <ProtectedLayoutRoute>
+        <ProductDetail />
+      </ProtectedLayoutRoute>
+    ),
+  },
+  {
+    path: ROUTES.PROFILE,
     element: (
       <ProtectedLayoutRoute>
         <ProfilePage />
@@ -75,7 +86,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/carrinho',
+    path: ROUTES.CART,
     element: (
       <ProtectedLayoutRoute>
         <CartPage />
@@ -83,7 +94,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/pedidos',
+    path: ROUTES.ORDERS,
     element: (
       <ProtectedLayoutRoute>
         <OrdersPage />
@@ -91,17 +102,3 @@ export const routes: RouteObject[] = [
     ),
   },
 ];
-
-// Constantes para as rotas (evita erros de digitação)
-export const ROUTES = {
-  LOGIN: '/login',
-  REGISTER: '/register',
-  HOME: '/',
-  PRODUCTS: '/produtos',
-  PROFILE: '/perfil',
-  CART: '/carrinho',
-  ORDERS: '/pedidos',
-} as const;
-
-// Tipos para TypeScript
-export type RouteNames = (typeof ROUTES)[keyof typeof ROUTES];
