@@ -53,14 +53,3 @@ export const getFeaturedProducts = async (limit?: number): Promise<ProductInterf
 
   return response.data.data;
 };
-
-export const getCategories = async (): Promise<Category[]> => {
-  const response: AxiosResponse<ApiResponse<Category[]>> =
-    await apiClient.get('/products/categories');
-
-  if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.error || 'Erro ao buscar categorias');
-  }
-
-  return response.data.data;
-};

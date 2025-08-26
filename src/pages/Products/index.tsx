@@ -4,6 +4,8 @@ import { FilterOutlined } from '@ant-design/icons';
 import type { ProductInterface } from '../../interface/ProductInterface';
 import { getProducts } from '../../services/productService';
 import ProductCard from '../../components/Card/ProductCard';
+import { getCategories } from '../../services/categoryService';
+import CategoryInterface from '../../interface/CategoryInterface';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -11,6 +13,8 @@ const { Option } = Select;
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<ProductInterface[]>([]);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
@@ -19,21 +23,18 @@ const ProductsPage: React.FC = () => {
 
   useEffect(() => {
     loadProducts();
+    loadCategories();
   }, []);
 
   const loadProducts = async () => {
     const response = await getProducts();
-    console.log(response.data);
     setProducts(response.data);
   };
 
-  const categories = [
-    { value: 'all', label: 'Todas as Categorias' },
-    { value: 'smartphones', label: 'Smartphones' },
-    { value: 'laptops', label: 'Laptops' },
-    { value: 'tablets', label: 'Tablets' },
-    { value: 'audio', label: 'Áudio' },
-  ];
+  const loadCategories = async () => {
+    const response = await getCategories();
+    setCategories(response.data);
+  };
 
   const sortOptions = [
     { value: 'name', label: 'Nome' },
@@ -44,8 +45,9 @@ const ProductsPage: React.FC = () => {
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'all' || product.category.name === selectedCategory;
+
+    const matchesCategory = selectedCategory === 'all' || product.category.id === selectedCategory;
+
     return matchesSearch && matchesCategory;
   });
 
@@ -91,9 +93,9 @@ const ProductsPage: React.FC = () => {
                 size="large"
                 suffixIcon={<FilterOutlined />}
               >
-                {categories.map((cat) => (
-                  <Option key={cat.value} value={cat.value}>
-                    {cat.label}
+                {categories.map((category) => (
+                  <Option key={category.id} value={category.id}>
+                    {category.name}
                   </Option>
                 ))}
               </Select>
