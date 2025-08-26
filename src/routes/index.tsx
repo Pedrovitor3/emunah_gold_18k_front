@@ -15,26 +15,18 @@ const ProfilePage = React.lazy(() => import('../pages/Profile'));
 const CartPage = React.lazy(() => import('../pages/Cart'));
 const OrdersPage = React.lazy(() => import('../pages/Orders'));
 
-
-
-
-
 // Wrapper para rotas protegidas com layout
 const ProtectedLayoutRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <ProtectedRoute>
     <MainLayout>
-      <React.Suspense fallback={<LoadingSpinner />}>
-        {children}
-      </React.Suspense>
+      <React.Suspense fallback={<LoadingSpinner />}>{children}</React.Suspense>
     </MainLayout>
   </ProtectedRoute>
 );
 
 // Wrapper para rotas públicas
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <React.Suspense fallback={<LoadingSpinner />}>
-    {children}
-  </React.Suspense>
+  <React.Suspense fallback={<LoadingSpinner />}>{children}</React.Suspense>
 );
 
 // Configuração das rotas
@@ -56,7 +48,7 @@ export const routes: RouteObject[] = [
       </PublicRoute>
     ),
   },
-  
+
   // Rotas protegidas
   {
     path: '/',
@@ -112,4 +104,4 @@ export const ROUTES = {
 } as const;
 
 // Tipos para TypeScript
-export type RouteNames = typeof ROUTES[keyof typeof ROUTES];
+export type RouteNames = (typeof ROUTES)[keyof typeof ROUTES];

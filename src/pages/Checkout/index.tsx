@@ -1,28 +1,26 @@
-
-
 import React, { useState, useEffect } from 'react';
-import { 
-  Row, 
-  Col, 
-  Card, 
-  Form, 
-  Input, 
-  Button, 
-  Radio, 
-  Divider, 
-  Typography, 
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Button,
+  Radio,
+  Divider,
+  Typography,
   Space,
   message,
   Spin,
   Steps,
-  Modal
+  Modal,
 } from 'antd';
-import { 
-  CreditCardOutlined, 
+import {
+  CreditCardOutlined,
   QrcodeOutlined,
   ShoppingCartOutlined,
   EnvironmentOutlined,
-  CheckCircleOutlined
+  CheckCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
@@ -59,7 +57,7 @@ const Checkout: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState<OrderResponse | null>(null);
   const [showPixModal, setShowPixModal] = useState(false);
-  
+
   const { items, total, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -81,13 +79,13 @@ const Checkout: React.FC = () => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'BRL',
     }).format(price);
   };
 
   const handleFinishOrder = async (values: any) => {
     setLoading(true);
-    
+
     try {
       const shippingAddress: ShippingAddress = {
         street: values.street,
@@ -96,13 +94,13 @@ const Checkout: React.FC = () => {
         neighborhood: values.neighborhood,
         city: values.city,
         state: values.state,
-        zip_code: values.zip_code.replace(/\D/g, '')
+        zip_code: values.zip_code.replace(/\D/g, ''),
       };
 
       const orderResponse = await createOrder({
         payment_method: paymentMethod,
         shipping_address: shippingAddress,
-        notes: values.notes
+        notes: values.notes,
       });
 
       setOrderData(orderResponse);
@@ -143,37 +141,41 @@ const Checkout: React.FC = () => {
   const steps = [
     {
       title: 'Carrinho',
-      icon: <ShoppingCartOutlined />
+      icon: <ShoppingCartOutlined />,
     },
     {
       title: 'Endereço e Pagamento',
-      icon: <EnvironmentOutlined />
+      icon: <EnvironmentOutlined />,
     },
     {
       title: 'Confirmação',
-      icon: <CheckCircleOutlined />
-    }
+      icon: <CheckCircleOutlined />,
+    },
   ];
 
   if (loading && currentStep === 0) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '400px' 
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '400px',
+        }}
+      >
         <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '24px' 
-    }}>
+    <div
+      style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '24px',
+      }}
+    >
       <Title level={2} style={{ textAlign: 'center', marginBottom: '32px' }}>
         Finalizar Compra
       </Title>
@@ -190,36 +192,39 @@ const Checkout: React.FC = () => {
           <Card title="Resumo do Pedido" style={{ position: 'sticky', top: '24px' }}>
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               {items.map((item) => (
-                <div key={item.id} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
+                <div
+                  key={item.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
                   <div>
                     <Text strong>{item.product?.name || 'Produto'}</Text>
                     <br />
                     <Text type="secondary">Qtd: {item.quantity}</Text>
                   </div>
                   <Text strong>
-                    {formatPrice((item.product?.price || 0) * item.quantity)}
+                    {formatPrice((parseFloat(item.product?.price) || 0) * item.quantity)}
                   </Text>
                 </div>
               ))}
-              
+
               <Divider />
-              
+
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text>Subtotal:</Text>
                 <Text>{formatPrice(total)}</Text>
               </div>
-              
+
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Text>Frete:</Text>
                 <Text>{shippingCost === 0 ? 'Grátis' : formatPrice(shippingCost)}</Text>
               </div>
-              
+
               <Divider />
-              
+
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Title level={4}>Total:</Title>
                 <Title level={4} style={{ color: '#d4af37' }}>
@@ -239,11 +244,11 @@ const Checkout: React.FC = () => {
                 layout="vertical"
                 onFinish={handleFinishOrder}
                 initialValues={{
-                  state: 'SP'
+                  state: 'SP',
                 }}
               >
                 <Title level={4}>Endereço de Entrega</Title>
-                
+
                 <Row gutter={16}>
                   <Col xs={24} sm={16}>
                     <Form.Item
@@ -265,10 +270,7 @@ const Checkout: React.FC = () => {
                   </Col>
                 </Row>
 
-                <Form.Item
-                  name="complement"
-                  label="Complemento"
-                >
+                <Form.Item name="complement" label="Complemento">
                   <Input placeholder="Apartamento, bloco, etc." />
                 </Form.Item>
 
@@ -309,7 +311,7 @@ const Checkout: React.FC = () => {
                       label="CEP"
                       rules={[
                         { required: true, message: 'CEP é obrigatório' },
-                        { pattern: /^\d{5}-?\d{3}$/, message: 'CEP inválido' }
+                        { pattern: /^\d{5}-?\d{3}$/, message: 'CEP inválido' },
                       ]}
                     >
                       <Input placeholder="12345-678" />
@@ -320,9 +322,9 @@ const Checkout: React.FC = () => {
                 <Divider />
 
                 <Title level={4}>Forma de Pagamento</Title>
-                
-                <Radio.Group 
-                  value={paymentMethod} 
+
+                <Radio.Group
+                  value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   style={{ width: '100%' }}
                 >
@@ -344,28 +346,22 @@ const Checkout: React.FC = () => {
 
                 <Divider />
 
-                <Form.Item
-                  name="notes"
-                  label="Observações (opcional)"
-                >
-                  <Input.TextArea 
-                    rows={3} 
-                    placeholder="Alguma observação sobre o pedido..." 
-                  />
+                <Form.Item name="notes" label="Observações (opcional)">
+                  <Input.TextArea rows={3} placeholder="Alguma observação sobre o pedido..." />
                 </Form.Item>
 
                 <Form.Item>
-                  <Button 
-                    type="primary" 
-                    htmlType="submit" 
+                  <Button
+                    type="primary"
+                    htmlType="submit"
                     size="large"
                     loading={loading}
-                    style={{ 
+                    style={{
                       width: '100%',
                       backgroundColor: '#d4af37',
                       borderColor: '#d4af37',
                       height: '48px',
-                      fontSize: '16px'
+                      fontSize: '16px',
                     }}
                   >
                     Finalizar Pedido - {formatPrice(finalTotal)}
@@ -379,36 +375,29 @@ const Checkout: React.FC = () => {
             <Card title="Pedido Criado com Sucesso!">
               <Space direction="vertical" style={{ width: '100%' }} size="large">
                 <div style={{ textAlign: 'center' }}>
-                  <CheckCircleOutlined 
-                    style={{ fontSize: '64px', color: '#52c41a' }} 
-                  />
+                  <CheckCircleOutlined style={{ fontSize: '64px', color: '#52c41a' }} />
                   <Title level={3} style={{ marginTop: '16px' }}>
                     Pedido #{orderData.orderNumber}
                   </Title>
-                  <Text type="secondary">
-                    Seu pedido foi criado com sucesso!
-                  </Text>
+                  <Text type="secondary">Seu pedido foi criado com sucesso!</Text>
                 </div>
 
                 <Divider />
 
                 <div style={{ textAlign: 'center' }}>
                   <Space direction="vertical" size="middle">
-                    <Button 
+                    <Button
                       type="primary"
                       size="large"
                       onClick={() => navigate(`/orders/${orderData.orderId}`)}
-                      style={{ 
+                      style={{
                         backgroundColor: '#d4af37',
-                        borderColor: '#d4af37'
+                        borderColor: '#d4af37',
                       }}
                     >
                       Ver Detalhes do Pedido
                     </Button>
-                    <Button 
-                      size="large"
-                      onClick={() => navigate('/')}
-                    >
+                    <Button size="large" onClick={() => navigate('/')}>
                       Continuar Comprando
                     </Button>
                   </Space>
@@ -428,40 +417,36 @@ const Checkout: React.FC = () => {
           <Button key="cancel" onClick={() => setShowPixModal(false)}>
             Cancelar
           </Button>,
-          <Button 
-            key="confirm" 
-            type="primary" 
+          <Button
+            key="confirm"
+            type="primary"
             loading={loading}
             onClick={handleConfirmPayment}
             style={{ backgroundColor: '#d4af37', borderColor: '#d4af37' }}
           >
             Confirmar Pagamento
-          </Button>
+          </Button>,
         ]}
         width={600}
       >
         {orderData?.pixData && (
           <Space direction="vertical" style={{ width: '100%' }} size="large">
             <div style={{ textAlign: 'center' }}>
-              <Title level={4}>
-                Escaneie o QR Code ou copie o código PIX
-              </Title>
-              <Text type="secondary">
-                Valor: {formatPrice(orderData.total)}
-              </Text>
+              <Title level={4}>Escaneie o QR Code ou copie o código PIX</Title>
+              <Text type="secondary">Valor: {formatPrice(orderData.total)}</Text>
             </div>
 
             <div style={{ textAlign: 'center' }}>
-              <img 
-                src={orderData.pixData.qrCode} 
-                alt="QR Code PIX" 
+              <img
+                src={orderData.pixData.qrCode}
+                alt="QR Code PIX"
                 style={{ maxWidth: '200px', border: '1px solid #d9d9d9' }}
               />
             </div>
 
             <div>
               <Text strong>Código PIX:</Text>
-              <Input.TextArea 
+              <Input.TextArea
                 value={orderData.pixData.code}
                 readOnly
                 rows={3}
@@ -469,15 +454,17 @@ const Checkout: React.FC = () => {
               />
             </div>
 
-            <div style={{ 
-              background: '#f6ffed', 
-              border: '1px solid #b7eb8f',
-              borderRadius: '6px',
-              padding: '12px'
-            }}>
+            <div
+              style={{
+                background: '#f6ffed',
+                border: '1px solid #b7eb8f',
+                borderRadius: '6px',
+                padding: '12px',
+              }}
+            >
               <Text type="secondary">
-                💡 Este é um ambiente de demonstração. 
-                Clique em "Confirmar Pagamento" para simular a aprovação do PIX.
+                💡 Este é um ambiente de demonstração. Clique em "Confirmar Pagamento" para simular
+                a aprovação do PIX.
               </Text>
             </div>
           </Space>
@@ -488,4 +475,3 @@ const Checkout: React.FC = () => {
 };
 
 export default Checkout;
-

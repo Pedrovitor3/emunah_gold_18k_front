@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthContextType, RegisterData } from '../types';
 import { message } from 'antd';
@@ -30,7 +29,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem('user');
       }
     }
-    
+
     setLoading(false);
   }, []);
 
@@ -41,15 +40,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       const response = await loginService(email, password);
-      
+
       // Salvar no estado
       setUser(response.user);
       setToken(response.token);
-      
+
       // Salvar no localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
-      
+
       message.success('Login realizado com sucesso!');
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || error.message || 'Erro no login';
@@ -67,15 +66,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       const response = await registerService(userData);
-      
+
       // Salvar no estado
       setUser(response.user);
       setToken(response.token);
-      
+
       // Salvar no localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
-      
+
       message.success('Conta criada com sucesso!');
     } catch (error: any) {
       const errorMessage = error.response?.data?.error || error.message || 'Erro no registro';
@@ -106,11 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 /**
@@ -123,4 +118,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-

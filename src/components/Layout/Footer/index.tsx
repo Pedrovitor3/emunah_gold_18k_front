@@ -6,7 +6,7 @@ import {
   EnvironmentOutlined,
   InstagramOutlined,
   FacebookOutlined,
-  WhatsAppOutlined
+  WhatsAppOutlined,
 } from '@ant-design/icons';
 
 const { Footer: AntFooter } = Layout;
@@ -14,15 +14,19 @@ const { Title, Text, Link } = Typography;
 
 const Footer: React.FC = () => {
   return (
-    <AntFooter style={{
-      background: '#1a1a1a',
-      color: '#ffffff',
-      padding: '48px 24px 24px'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto'
-      }}>
+    <AntFooter
+      style={{
+        background: '#1a1a1a',
+        color: '#ffffff',
+        padding: '48px 24px 24px',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+        }}
+      >
         <Row gutter={[32, 32]}>
           {/* Informações da empresa */}
           <Col xs={24} sm={12} md={8}>
@@ -30,8 +34,8 @@ const Footer: React.FC = () => {
               Emunah Gold 18K
             </Title>
             <Text style={{ color: '#cccccc', lineHeight: '1.6' }}>
-              Especialistas em joias de ouro 18K com qualidade excepcional e
-              designs únicos. Tradição e elegância em cada peça.
+              Especialistas em joias de ouro 18K com qualidade excepcional e designs únicos.
+              Tradição e elegância em cada peça.
             </Text>
             <div style={{ marginTop: '16px' }}>
               <Space size="middle">
@@ -95,21 +99,19 @@ const Footer: React.FC = () => {
             <Space direction="vertical" size="middle">
               <Space>
                 <PhoneOutlined style={{ color: '#d4af37' }} />
-                <Text style={{ color: '#cccccc' }}>
-                  (11) 99999-9999
-                </Text>
+                <Text style={{ color: '#cccccc' }}>(11) 99999-9999</Text>
               </Space>
               <Space>
                 <MailOutlined style={{ color: '#d4af37' }} />
-                <Text style={{ color: '#cccccc' }}>
-                  contato@emunah.com
-                </Text>
+                <Text style={{ color: '#cccccc' }}>contato@emunah.com</Text>
               </Space>
               <Space align="start">
                 <EnvironmentOutlined style={{ color: '#d4af37', marginTop: '4px' }} />
                 <Text style={{ color: '#cccccc' }}>
-                  Rua das Joias, 123<br />
-                  Centro - São Paulo/SP<br />
+                  Rua das Joias, 123
+                  <br />
+                  Centro - São Paulo/SP
+                  <br />
                   CEP: 01234-567
                 </Text>
               </Space>
@@ -128,9 +130,7 @@ const Footer: React.FC = () => {
           </Col>
           <Col xs={24} sm={12} style={{ textAlign: 'right' }}>
             <Space split={<span style={{ color: '#666666' }}>|</span>}>
-              <Text style={{ color: '#888888' }}>
-                Formas de Pagamento: Cartão de Crédito, PIX
-              </Text>
+              <Text style={{ color: '#888888' }}>Formas de Pagamento: Cartão de Crédito, PIX</Text>
             </Space>
           </Col>
         </Row>
@@ -140,4 +140,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-

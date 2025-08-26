@@ -1,26 +1,20 @@
-import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Badge, Button, Card, Image, Rate, Space, Tag, Typography } from "antd";
-import type { ProductInterface } from "../../interface/ProductInterface";
-import type React from "react";
+import { HeartOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Badge, Button, Card, Image, Rate, Space, Tag, Typography } from 'antd';
+import type { ProductInterface } from '../../interface/ProductInterface';
+import type React from 'react';
 const { Title, Text, Paragraph } = Typography;
 
 const ProductCard: React.FC<{ product: ProductInterface }> = ({ product }) => {
-
-  const productHasStock = product.stock_quantity <    0;
+  const productHasStock = product.stock_quantity < 0;
 
   const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(price);
+  };
 
-  return new Intl.NumberFormat('pt-BR',
-    {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(price);
-};
-
-
-return (
-
-
+  return (
     <Card
       hoverable
       style={{
@@ -47,7 +41,7 @@ return (
               style={{ top: 16, right: -8 }}
             />
           )} */}
-          {productHasStock  && (
+          {productHasStock && (
             <div
               style={{
                 position: 'absolute',
@@ -74,10 +68,7 @@ return (
           {product.name}
         </Title>
 
-        <Paragraph
-          style={{ color: '#666', fontSize: 13, marginBottom: 12 }}
-          ellipsis={{ rows: 2 }}
-        >
+        <Paragraph style={{ color: '#666', fontSize: 13, marginBottom: 12 }} ellipsis={{ rows: 2 }}>
           {product.description}
         </Paragraph>
 
@@ -112,19 +103,17 @@ return (
             disabled={productHasStock}
             style={{
               background: productHasStock ? '#d4af37' : undefined,
-              borderColor: productHasStock? '#d4af37' : undefined,
+              borderColor: productHasStock ? '#d4af37' : undefined,
               borderRadius: 8,
               fontWeight: 500,
             }}
           >
             {productHasStock ? 'Adicionar' : 'Indisponível'}
           </Button>
-          <Button
-            icon={<HeartOutlined />}
-            style={{ borderRadius: 8 }}
-          />
+          <Button icon={<HeartOutlined />} style={{ borderRadius: 8 }} />
         </Space>
       </div>
     </Card>
-  )};
+  );
+};
 export default ProductCard;

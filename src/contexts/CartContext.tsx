@@ -1,7 +1,7 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product, CartItem, CartContextType } from '../types';
+import { CartItem, CartContextType } from '../types';
 import { message } from 'antd';
+import type { ProductInterface } from '../interface/ProductInterface';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -33,16 +33,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   /**
    * Adicionar item ao carrinho
    */
-  const addItem = (product: Product, quantity: number = 1): void => {
-    setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.product_id === product.id);
-      
+  const addItem = (product: ProductInterface, quantity: number = 1): void => {
+    setItems((currentItems) => {
+      const existingItem = currentItems.find((item) => item.product_id === product.id);
+
       if (existingItem) {
         // Se já existe, aumenta a quantidade
-        const updatedItems = currentItems.map(item =>
-          item.product_id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+        const updatedItems = currentItems.map((item) =>
+          item.product_id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         );
         message.success(`${product.name} - quantidade atualizada no carrinho`);
         return updatedItems;
@@ -55,7 +53,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           quantity,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          product
+          product,
         };
         message.success(`${product.name} adicionado ao carrinho`);
         return [...currentItems, newItem];
@@ -67,9 +65,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
    * Remover item do carrinho
    */
   const removeItem = (productId: string): void => {
-    setItems(currentItems => {
-      const filteredItems = currentItems.filter(item => item.product_id !== productId);
-      const removedItem = currentItems.find(item => item.product_id === productId);
+    setItems((currentItems) => {
+      const filteredItems = currentItems.filter((item) => item.product_id !== productId);
+      const removedItem = currentItems.find((item) => item.product_id === productId);
       if (removedItem) {
         message.info(`${removedItem.product?.name} removido do carrinho`);
       }
@@ -86,8 +84,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return;
     }
 
-    setItems(currentItems => 
-      currentItems.map(item =>
+    setItems((currentItems) =>
+      currentItems.map((item) =>
         item.product_id === productId
           ? { ...item, quantity, updated_at: new Date().toISOString() }
           : item
@@ -107,8 +105,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
    * Calcular total do carrinho
    */
   const total = items.reduce((sum, item) => {
-    const price = item.product?.price || 0;
-    return sum + (price * item.quantity);
+    const price = parseFloat(item.product?.price) || 0;
+    return sum + price * item.quantity;
   }, 0);
 
   /**
@@ -123,14 +121,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     updateQuantity,
     clearCart,
     total,
-    itemCount
+    itemCount,
   };
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
 /**

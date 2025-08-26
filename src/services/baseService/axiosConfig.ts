@@ -20,7 +20,7 @@ export const setLogoutFunction = (logout: () => void) => {
 
 // Interceptor de requisição
 apiClient.interceptors.request.use(
-  config => {
+  (config) => {
     // Pega o token do localStorage
     const token = localStorage.getItem('token');
     if (token) {
@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  error => {
+  (error) => {
     console.error('Erro na requisição:', error);
     return Promise.reject(error);
   }
@@ -36,11 +36,11 @@ apiClient.interceptors.request.use(
 
 // Interceptor de resposta
 apiClient.interceptors.response.use(
-  response => {
+  (response) => {
     console.log('Resposta recebida:', response.status);
     return response;
   },
-  error => {
+  (error) => {
     if (error.response) {
       switch (error.response.status) {
         case 401:

@@ -3,7 +3,7 @@ export const ROUTES = {
   // Rotas públicas
   LOGIN: '/login',
   REGISTER: '/register',
-  
+
   // Rotas protegidas
   HOME: '/',
   PRODUCTS: '/produtos',
@@ -13,14 +13,13 @@ export const ROUTES = {
 } as const;
 
 // Tipos para TypeScript
-export type RouteNames = typeof ROUTES[keyof typeof ROUTES];
+export type RouteNames = (typeof ROUTES)[keyof typeof ROUTES];
 
 // Helper para verificar se uma rota é pública
 export const isPublicRoute = (pathname: string): boolean => {
   const publicRoutes: string[] = [ROUTES.LOGIN, ROUTES.REGISTER];
   return publicRoutes.includes(pathname);
 };
-
 
 // Helper para verificar se uma rota é protegida
 export const isProtectedRoute = (pathname: string): boolean => {

@@ -1,6 +1,6 @@
 // hooks/useNavigation.ts
 import { useNavigate, useLocation } from 'react-router-dom';
-import { RouteNames,ROUTES } from '../routes';
+import { RouteNames, ROUTES } from '../routes';
 export const useAppNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,7 +48,7 @@ export const useAppNavigation = () => {
     // Navegação genérica
     navigateTo,
     goBack,
-    
+
     // Navegação específica
     goToHome,
     goToLogin,
@@ -56,11 +56,11 @@ export const useAppNavigation = () => {
     goToProfile,
     goToCart,
     goToOrders,
-    
+
     // Utilitários
     isCurrentRoute,
     currentPath: location.pathname,
-    
+
     // Constantes das rotas
     routes: ROUTES,
   };

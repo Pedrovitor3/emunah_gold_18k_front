@@ -1,12 +1,15 @@
-
-
 import React from 'react';
 import { Form, Input, Button, Card, Typography, Row, Col, Divider } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, CrownOutlined } from '@ant-design/icons';
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  CrownOutlined,
+} from '@ant-design/icons';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import type { RegisterData } from '../../types';
-
 
 const { Title, Text } = Typography;
 
@@ -30,37 +33,37 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '16px'
-    }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}
+    >
       <Row justify="center" style={{ width: '100%', maxWidth: 1200 }}>
         <Col xs={24} sm={20} md={18} lg={14} xl={10}>
           <Card
             style={{
               boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)',
               borderRadius: '12px',
-              border: 'none'
+              border: 'none',
             }}
           >
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-              <CrownOutlined 
-                style={{ 
-                  fontSize: '48px', 
+              <CrownOutlined
+                style={{
+                  fontSize: '48px',
                   color: '#d4af37',
-                  marginBottom: '16px'
-                }} 
+                  marginBottom: '16px',
+                }}
               />
               <Title level={2} style={{ margin: 0, color: '#2c3e50' }}>
                 Emunah Gold 18K
               </Title>
-              <Text type="secondary">
-                Crie sua conta e faça parte da nossa família
-              </Text>
+              <Text type="secondary">Crie sua conta e faça parte da nossa família</Text>
             </div>
 
             <Form
@@ -77,28 +80,28 @@ const RegisterPage: React.FC = () => {
                     label="Nome"
                     rules={[
                       { required: true, message: 'Por favor, insira seu nome!' },
-                      { min: 2, message: 'Nome deve ter pelo menos 2 caracteres!' }
+                      { min: 2, message: 'Nome deve ter pelo menos 2 caracteres!' },
                     ]}
                   >
-                    <Input 
-                      prefix={<UserOutlined />} 
+                    <Input
+                      prefix={<UserOutlined />}
                       placeholder="Seu nome"
                       style={{ borderRadius: '8px' }}
                     />
                   </Form.Item>
                 </Col>
-                
+
                 <Col xs={24} md={12}>
                   <Form.Item
                     name="last_name"
                     label="Sobrenome"
                     rules={[
                       { required: true, message: 'Por favor, insira seu sobrenome!' },
-                      { min: 2, message: 'Sobrenome deve ter pelo menos 2 caracteres!' }
+                      { min: 2, message: 'Sobrenome deve ter pelo menos 2 caracteres!' },
                     ]}
                   >
-                    <Input 
-                      prefix={<UserOutlined />} 
+                    <Input
+                      prefix={<UserOutlined />}
                       placeholder="Seu sobrenome"
                       style={{ borderRadius: '8px' }}
                     />
@@ -111,11 +114,11 @@ const RegisterPage: React.FC = () => {
                 label="Email"
                 rules={[
                   { required: true, message: 'Por favor, insira seu email!' },
-                  { type: 'email', message: 'Email inválido!' }
+                  { type: 'email', message: 'Email inválido!' },
                 ]}
               >
-                <Input 
-                  prefix={<MailOutlined />} 
+                <Input
+                  prefix={<MailOutlined />}
                   placeholder="seu@email.com"
                   style={{ borderRadius: '8px' }}
                 />
@@ -125,11 +128,11 @@ const RegisterPage: React.FC = () => {
                 name="phone"
                 label="Telefone (Opcional)"
                 rules={[
-                  { pattern: /^\(\d{2}\)\s\d{4,5}-\d{4}$/, message: 'Formato: (11) 99999-9999' }
+                  { pattern: /^\(\d{2}\)\s\d{4,5}-\d{4}$/, message: 'Formato: (11) 99999-9999' },
                 ]}
               >
-                <Input 
-                  prefix={<PhoneOutlined />} 
+                <Input
+                  prefix={<PhoneOutlined />}
                   placeholder="(11) 99999-9999"
                   style={{ borderRadius: '8px' }}
                   maxLength={15}
@@ -143,7 +146,7 @@ const RegisterPage: React.FC = () => {
                     label="Senha"
                     rules={[
                       { required: true, message: 'Por favor, insira sua senha!' },
-                      { min: 6, message: 'Senha deve ter pelo menos 6 caracteres!' }
+                      { min: 6, message: 'Senha deve ter pelo menos 6 caracteres!' },
                     ]}
                   >
                     <Input.Password
@@ -192,7 +195,7 @@ const RegisterPage: React.FC = () => {
                     background: 'linear-gradient(135deg, #d4af37 0%, #b8941f 100%)',
                     border: 'none',
                     fontWeight: 600,
-                    fontSize: '16px'
+                    fontSize: '16px',
                   }}
                 >
                   Criar Conta

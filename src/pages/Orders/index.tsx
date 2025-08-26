@@ -50,15 +50,15 @@ const mockOrders = [
     orderNumber: '#PED-2024-001',
     date: '2024-08-15',
     status: 'delivered',
-    total: 7999.90,
+    total: 7999.9,
     items: [
       {
         id: 1,
         name: 'iPhone 15 Pro Max',
         image: 'https://images.unsplash.com/photo-1696446702061-95c0d5ae964e?w=100',
         quantity: 1,
-        price: 7999.90,
-      }
+        price: 7999.9,
+      },
     ],
     shipping: {
       address: 'Rua das Flores, 123 - São Paulo, SP',
@@ -78,15 +78,15 @@ const mockOrders = [
     orderNumber: '#PED-2024-002',
     date: '2024-08-10',
     status: 'shipped',
-    total: 3799.80,
+    total: 3799.8,
     items: [
       {
         id: 2,
         name: 'AirPods Pro 2ª Geração',
         image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=100',
         quantity: 2,
-        price: 1899.90,
-      }
+        price: 1899.9,
+      },
     ],
     shipping: {
       address: 'Av. Paulista, 456 - São Paulo, SP',
@@ -106,15 +106,15 @@ const mockOrders = [
     orderNumber: '#PED-2024-003',
     date: '2024-08-05',
     status: 'processing',
-    total: 9999.90,
+    total: 9999.9,
     items: [
       {
         id: 3,
         name: 'MacBook Air M3',
         image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=100',
         quantity: 1,
-        price: 9999.90,
-      }
+        price: 9999.9,
+      },
     ],
     shipping: {
       address: 'Rua Augusta, 789 - São Paulo, SP',
@@ -180,7 +180,7 @@ const OrdersPage: React.FC = () => {
 
   const OrderCard: React.FC<{ order: any }> = ({ order }) => {
     const status = statusConfig[order.status as keyof typeof statusConfig];
-    
+
     return (
       <Card
         style={{
@@ -252,7 +252,7 @@ const OrdersPage: React.FC = () => {
               >
                 Detalhes
               </Button>
-              
+
               <Space size={4} style={{ width: '100%' }}>
                 <Tooltip title="Comprar novamente">
                   <Button
@@ -262,7 +262,7 @@ const OrdersPage: React.FC = () => {
                     style={{ borderRadius: 6, flex: 1 }}
                   />
                 </Tooltip>
-                
+
                 {order.status === 'delivered' && (
                   <Tooltip title="Avaliar">
                     <Button
@@ -273,7 +273,7 @@ const OrdersPage: React.FC = () => {
                     />
                   </Tooltip>
                 )}
-                
+
                 <Tooltip title="Baixar nota">
                   <Button
                     size="small"
@@ -346,7 +346,7 @@ const OrdersPage: React.FC = () => {
         {/* Orders List */}
         {filteredOrders.length > 0 ? (
           <div>
-            {filteredOrders.map(order => (
+            {filteredOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
             ))}
           </div>
@@ -409,11 +409,7 @@ const OrdersPage: React.FC = () => {
             <div>
               <Row gutter={[24, 24]}>
                 <Col span={24}>
-                  <Card
-                    title="Informações do Pedido"
-                    size="small"
-                    style={{ marginBottom: 16 }}
-                  >
+                  <Card title="Informações do Pedido" size="small" style={{ marginBottom: 16 }}>
                     <Row gutter={16}>
                       <Col span={12}>
                         <Space direction="vertical" size={4}>
@@ -428,14 +424,18 @@ const OrdersPage: React.FC = () => {
                         </Space>
                       </Col>
                     </Row>
-                    
+
                     <Divider style={{ margin: '12px 0' }} />
-                    
+
                     <Row gutter={16}>
                       <Col span={12}>
                         <Space direction="vertical" size={4}>
                           <Text strong>Status:</Text>
-                          <Tag color={statusConfig[selectedOrder.status as keyof typeof statusConfig].color}>
+                          <Tag
+                            color={
+                              statusConfig[selectedOrder.status as keyof typeof statusConfig].color
+                            }
+                          >
                             {statusConfig[selectedOrder.status as keyof typeof statusConfig].label}
                           </Tag>
                         </Space>
@@ -540,11 +540,7 @@ const OrdersPage: React.FC = () => {
           width={500}
         >
           {selectedOrder && (
-            <Form
-              form={reviewForm}
-              layout="vertical"
-              onFinish={submitReview}
-            >
+            <Form form={reviewForm} layout="vertical" onFinish={submitReview}>
               <Space direction="vertical" style={{ width: '100%' }} size="large">
                 {selectedOrder.items.map((item: any, index: number) => (
                   <Card key={index} size="small" style={{ backgroundColor: '#fafafa' }}>
@@ -565,9 +561,9 @@ const OrdersPage: React.FC = () => {
                         </Text>
                       </Col>
                     </Row>
-                    
+
                     <Divider style={{ margin: '12px 0' }} />
-                    
+
                     <Form.Item
                       label="Avaliação"
                       name={`rating_${item.id}`}
@@ -575,11 +571,8 @@ const OrdersPage: React.FC = () => {
                     >
                       <Rate style={{ color: '#d4af37' }} />
                     </Form.Item>
-                    
-                    <Form.Item
-                      label="Comentário"
-                      name={`comment_${item.id}`}
-                    >
+
+                    <Form.Item label="Comentário" name={`comment_${item.id}`}>
                       <TextArea
                         rows={3}
                         placeholder="Conte-nos sobre sua experiência com este produto..."
@@ -588,7 +581,7 @@ const OrdersPage: React.FC = () => {
                     </Form.Item>
                   </Card>
                 ))}
-                
+
                 <Button
                   type="primary"
                   htmlType="submit"

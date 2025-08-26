@@ -41,8 +41,8 @@ const mockCartItems = [
   {
     id: 1,
     name: 'iPhone 15 Pro Max',
-    price: 7999.90,
-    originalPrice: 8999.90,
+    price: 7999.9,
+    originalPrice: 8999.9,
     image: 'https://images.unsplash.com/photo-1696446702061-95c0d5ae964e?w=150',
     quantity: 1,
     inStock: true,
@@ -52,8 +52,8 @@ const mockCartItems = [
   {
     id: 2,
     name: 'AirPods Pro 2ª Geração',
-    price: 1899.90,
-    originalPrice: 2099.90,
+    price: 1899.9,
+    originalPrice: 2099.9,
     image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=150',
     quantity: 2,
     inStock: true,
@@ -81,10 +81,8 @@ const CartPage: React.FC = () => {
       removeItem(id);
       return;
     }
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
+    setCartItems((items) =>
+      items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
     );
   };
 
@@ -96,7 +94,7 @@ const CartPage: React.FC = () => {
       cancelText: 'Cancelar',
       okButtonProps: { style: { background: '#d4af37', borderColor: '#d4af37' } },
       onOk: () => {
-        setCartItems(items => items.filter(item => item.id !== id));
+        setCartItems((items) => items.filter((item) => item.id !== id));
         message.success('Item removido do carrinho');
       },
     });
@@ -111,8 +109,8 @@ const CartPage: React.FC = () => {
     }
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 500 ? 0 : 29.90;
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = subtotal > 500 ? 0 : 29.9;
   const discount = appliedCoupon ? subtotal * appliedCoupon.discount : 0;
   const total = subtotal + shipping - discount;
 
@@ -137,7 +135,7 @@ const CartPage: React.FC = () => {
             preview={false}
           />
         </Col>
-        
+
         <Col xs={18} sm={12}>
           <Space direction="vertical" size={4} style={{ width: '100%' }}>
             <Title level={5} style={{ margin: 0, color: '#1a1a1a' }}>
@@ -238,11 +236,7 @@ const CartPage: React.FC = () => {
           }}
           bodyStyle={{ padding: '24px 32px' }}
         >
-          <Steps
-            current={currentStep}
-            items={steps}
-            style={{ marginBottom: 0 }}
-          />
+          <Steps current={currentStep} items={steps} style={{ marginBottom: 0 }} />
         </Card>
 
         {cartItems.length > 0 ? (
@@ -265,7 +259,7 @@ const CartPage: React.FC = () => {
 
                 {/* Items List */}
                 <div>
-                  {cartItems.map(item => (
+                  {cartItems.map((item) => (
                     <CartItem key={item.id} item={item} />
                   ))}
                 </div>
@@ -290,7 +284,7 @@ const CartPage: React.FC = () => {
                       <Space>
                         <CheckCircleOutlined style={{ color: '#52c41a' }} />
                         <Text>Cupom {appliedCoupon.code} aplicado</Text>
-                        <Tag color="success">-{(appliedCoupon.discount * 100)}%</Tag>
+                        <Tag color="success">-{appliedCoupon.discount * 100}%</Tag>
                       </Space>
                       <Button
                         type="link"
@@ -367,7 +361,9 @@ const CartPage: React.FC = () => {
                   <Divider style={{ margin: '12px 0' }} />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Title level={4} style={{ margin: 0 }}>Total</Title>
+                    <Title level={4} style={{ margin: 0 }}>
+                      Total
+                    </Title>
                     <Title level={4} style={{ margin: 0, color: '#d4af37' }}>
                       {formatPrice(total)}
                     </Title>
@@ -415,21 +411,15 @@ const CartPage: React.FC = () => {
                   <Space direction="vertical" size="small" style={{ width: '100%' }}>
                     <Space size="small">
                       <SafetyOutlined style={{ color: '#52c41a' }} />
-                      <Text style={{ fontSize: 12, color: '#666' }}>
-                        Pagamento seguro
-                      </Text>
+                      <Text style={{ fontSize: 12, color: '#666' }}>Pagamento seguro</Text>
                     </Space>
                     <Space size="small">
                       <TruckOutlined style={{ color: '#52c41a' }} />
-                      <Text style={{ fontSize: 12, color: '#666' }}>
-                        Entrega garantida
-                      </Text>
+                      <Text style={{ fontSize: 12, color: '#666' }}>Entrega garantida</Text>
                     </Space>
                     <Space size="small">
                       <GiftOutlined style={{ color: '#52c41a' }} />
-                      <Text style={{ fontSize: 12, color: '#666' }}>
-                        Garantia estendida
-                      </Text>
+                      <Text style={{ fontSize: 12, color: '#666' }}>Garantia estendida</Text>
                     </Space>
                   </Space>
                 </Space>

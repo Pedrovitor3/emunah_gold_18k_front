@@ -58,7 +58,7 @@ const ProfilePage: React.FC = () => {
     },
     memberSince: '2020-01-15',
     totalOrders: 47,
-    totalSpent: 25499.90,
+    totalSpent: 25499.9,
     loyaltyPoints: 2547,
     level: 'Gold',
     preferences: {
@@ -69,9 +69,9 @@ const ProfilePage: React.FC = () => {
   };
 
   const recentOrders = [
-    { id: '#001', date: '2024-08-15', total: 1299.90, status: 'Entregue' },
-    { id: '#002', date: '2024-08-10', total: 899.90, status: 'A caminho' },
-    { id: '#003', date: '2024-08-05', total: 2499.90, status: 'Processando' },
+    { id: '#001', date: '2024-08-15', total: 1299.9, status: 'Entregue' },
+    { id: '#002', date: '2024-08-10', total: 899.9, status: 'A caminho' },
+    { id: '#003', date: '2024-08-05', total: 2499.9, status: 'Processando' },
   ];
 
   const formatPrice = (price: number) => {
@@ -89,20 +89,20 @@ const ProfilePage: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     const colors = {
-      'Entregue': 'success',
+      Entregue: 'success',
       'A caminho': 'processing',
-      'Processando': 'warning',
-      'Cancelado': 'error',
+      Processando: 'warning',
+      Cancelado: 'error',
     };
     return colors[status as keyof typeof colors] || 'default';
   };
 
   const getLevelColor = (level: string) => {
     const colors = {
-      'Bronze': '#CD7F32',
-      'Silver': '#C0C0C0',
-      'Gold': '#d4af37',
-      'Platinum': '#E5E4E2',
+      Bronze: '#CD7F32',
+      Silver: '#C0C0C0',
+      Gold: '#d4af37',
+      Platinum: '#E5E4E2',
     };
     return colors[level as keyof typeof colors] || '#d4af37';
   };
@@ -158,11 +158,7 @@ const ProfilePage: React.FC = () => {
               </Title>
 
               <Space direction="vertical" align="center" style={{ marginBottom: 24 }}>
-                <Badge
-                  count={
-                    <CrownOutlined style={{ color: getLevelColor(userData.level) }} />
-                  }
-                >
+                <Badge count={<CrownOutlined style={{ color: getLevelColor(userData.level) }} />}>
                   <Tag
                     color={getLevelColor(userData.level)}
                     style={{ fontSize: 14, padding: '4px 12px', fontWeight: 500 }}
@@ -246,7 +242,14 @@ const ProfilePage: React.FC = () => {
                     label: 'Informações Pessoais',
                     children: (
                       <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: 24,
+                          }}
+                        >
                           <Title level={4} style={{ margin: 0 }}>
                             Dados Pessoais
                           </Title>
@@ -284,10 +287,7 @@ const ProfilePage: React.FC = () => {
                                 name="name"
                                 rules={[{ required: true, message: 'Nome é obrigatório' }]}
                               >
-                                <Input
-                                  prefix={<UserOutlined />}
-                                  style={{ borderRadius: 8 }}
-                                />
+                                <Input prefix={<UserOutlined />} style={{ borderRadius: 8 }} />
                               </Form.Item>
                             </Col>
                             <Col xs={24} sm={12}>
@@ -296,13 +296,10 @@ const ProfilePage: React.FC = () => {
                                 name="email"
                                 rules={[
                                   { required: true, message: 'E-mail é obrigatório' },
-                                  { type: 'email', message: 'E-mail inválido' }
+                                  { type: 'email', message: 'E-mail inválido' },
                                 ]}
                               >
-                                <Input
-                                  prefix={<MailOutlined />}
-                                  style={{ borderRadius: 8 }}
-                                />
+                                <Input prefix={<MailOutlined />} style={{ borderRadius: 8 }} />
                               </Form.Item>
                             </Col>
                           </Row>
@@ -314,10 +311,7 @@ const ProfilePage: React.FC = () => {
                                 name="phone"
                                 rules={[{ required: true, message: 'Telefone é obrigatório' }]}
                               >
-                                <Input
-                                  prefix={<PhoneOutlined />}
-                                  style={{ borderRadius: 8 }}
-                                />
+                                <Input prefix={<PhoneOutlined />} style={{ borderRadius: 8 }} />
                               </Form.Item>
                             </Col>
                             <Col xs={24} sm={12}>
@@ -330,10 +324,7 @@ const ProfilePage: React.FC = () => {
                           <Row gutter={16}>
                             <Col xs={24} sm={16}>
                               <Form.Item label="Endereço" name={['address', 'street']}>
-                                <Input
-                                  prefix={<HomeOutlined />}
-                                  style={{ borderRadius: 8 }}
-                                />
+                                <Input prefix={<HomeOutlined />} style={{ borderRadius: 8 }} />
                               </Form.Item>
                             </Col>
                             <Col xs={24} sm={8}>
@@ -360,7 +351,13 @@ const ProfilePage: React.FC = () => {
                         </Title>
 
                         <Space direction="vertical" style={{ width: '100%' }} size="large">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
+                          >
                             <div>
                               <Text strong>Notificações por E-mail</Text>
                               <br />
@@ -377,7 +374,13 @@ const ProfilePage: React.FC = () => {
 
                           <Divider style={{ margin: '12px 0' }} />
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
+                          >
                             <div>
                               <Text strong>Newsletter</Text>
                               <br />
@@ -394,7 +397,13 @@ const ProfilePage: React.FC = () => {
 
                           <Divider style={{ margin: '12px 0' }} />
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
+                          >
                             <div>
                               <Text strong>SMS</Text>
                               <br />
@@ -435,6 +444,7 @@ const ProfilePage: React.FC = () => {
                                 <Button
                                   type="link"
                                   style={{ color: '#d4af37', padding: 0 }}
+                                  key={order.id}
                                 >
                                   Ver Detalhes
                                 </Button>,
@@ -450,9 +460,7 @@ const ProfilePage: React.FC = () => {
                                 title={
                                   <Space>
                                     <Text strong>Pedido {order.id}</Text>
-                                    <Tag color={getStatusColor(order.status)}>
-                                      {order.status}
-                                    </Tag>
+                                    <Tag color={getStatusColor(order.status)}>{order.status}</Tag>
                                   </Space>
                                 }
                                 description={

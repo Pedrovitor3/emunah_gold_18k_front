@@ -1,23 +1,22 @@
-
 import React, { useState } from 'react';
-import { 
-  Card, 
-  Input, 
-  Button, 
-  Typography, 
-  Space, 
-  Timeline, 
+import {
+  Card,
+  Input,
+  Button,
+  Typography,
+  Space,
+  Timeline,
   message,
   Spin,
   Empty,
-  Divider
+  Divider,
 } from 'antd';
-import { 
-  SearchOutlined, 
+import {
+  SearchOutlined,
   EnvironmentOutlined,
   ClockCircleOutlined,
   CheckCircleOutlined,
-  TruckOutlined
+  TruckOutlined,
 } from '@ant-design/icons';
 import { getTrackingInfo } from '../../services/trackingService';
 
@@ -54,7 +53,7 @@ const Tracking: React.FC = () => {
 
     setLoading(true);
     setSearched(true);
-    
+
     try {
       const response = await getTrackingInfo(trackingCode.trim());
       setTrackingInfo(response);
@@ -68,7 +67,7 @@ const Tracking: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     const statusLower = status.toLowerCase();
-    
+
     if (statusLower.includes('confirmado') || statusLower.includes('preparação')) {
       return <ClockCircleOutlined style={{ color: '#faad14' }} />;
     }
@@ -78,7 +77,7 @@ const Tracking: React.FC = () => {
     if (statusLower.includes('entrega') || statusLower.includes('entregue')) {
       return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
     }
-    
+
     return <EnvironmentOutlined style={{ color: '#d4af37' }} />;
   };
 
@@ -89,7 +88,7 @@ const Tracking: React.FC = () => {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -101,21 +100,21 @@ const Tracking: React.FC = () => {
         return address;
       }
     }
-    
+
     return `${address.street}, ${address.number}${address.complement ? `, ${address.complement}` : ''} - ${address.neighborhood}, ${address.city}/${address.state} - CEP: ${address.zip_code}`;
   };
 
   return (
-    <div style={{ 
-      maxWidth: '800px', 
-      margin: '0 auto', 
-      padding: '24px' 
-    }}>
+    <div
+      style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '24px',
+      }}
+    >
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <Title level={2}>Rastreamento de Pedidos</Title>
-        <Text type="secondary">
-          Digite o código de rastreamento para acompanhar seu pedido
-        </Text>
+        <Text type="secondary">Digite o código de rastreamento para acompanhar seu pedido</Text>
       </div>
 
       <Card style={{ marginBottom: '24px' }}>
@@ -128,15 +127,15 @@ const Tracking: React.FC = () => {
             size="large"
             style={{ fontSize: '16px' }}
           />
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             icon={<SearchOutlined />}
             onClick={handleSearch}
             loading={loading}
             size="large"
-            style={{ 
+            style={{
               backgroundColor: '#d4af37',
-              borderColor: '#d4af37'
+              borderColor: '#d4af37',
             }}
           >
             Rastrear
@@ -145,10 +144,12 @@ const Tracking: React.FC = () => {
       </Card>
 
       {loading && (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '48px' 
-        }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '48px',
+          }}
+        >
           <Spin size="large" />
           <div style={{ marginTop: '16px' }}>
             <Text>Buscando informações do pedido...</Text>
@@ -178,17 +179,17 @@ const Tracking: React.FC = () => {
                 <Text strong>Pedido: </Text>
                 <Text>{trackingInfo.order_number}</Text>
               </div>
-              
+
               <div>
                 <Text strong>Código de Rastreamento: </Text>
                 <Text code>{trackingInfo.tracking_code}</Text>
               </div>
-              
+
               <div>
                 <Text strong>Destinatário: </Text>
                 <Text>{trackingInfo.recipient}</Text>
               </div>
-              
+
               <div>
                 <Text strong>Endereço de Entrega: </Text>
                 <Text>{formatAddress(trackingInfo.shipping_address)}</Text>
@@ -212,21 +213,19 @@ const Tracking: React.FC = () => {
                           {event.status}
                         </Text>
                       </div>
-                      
+
                       <div style={{ marginBottom: '4px' }}>
                         <Text>{event.description}</Text>
                       </div>
-                      
+
                       <div style={{ marginBottom: '4px' }}>
                         <EnvironmentOutlined style={{ marginRight: '4px', color: '#666' }} />
                         <Text type="secondary">{event.location}</Text>
                       </div>
-                      
+
                       <div>
                         <ClockCircleOutlined style={{ marginRight: '4px', color: '#666' }} />
-                        <Text type="secondary">
-                          {formatDate(event.occurred_at)}
-                        </Text>
+                        <Text type="secondary">{formatDate(event.occurred_at)}</Text>
                       </div>
                     </div>
                   </Timeline.Item>
@@ -244,14 +243,13 @@ const Tracking: React.FC = () => {
           <Card>
             <Space direction="vertical" style={{ width: '100%' }} size="middle">
               <Title level={4}>Precisa de Ajuda?</Title>
-              
+
               <Text>
-                Se você tiver dúvidas sobre seu pedido ou rastreamento, 
-                entre em contato conosco:
+                Se você tiver dúvidas sobre seu pedido ou rastreamento, entre em contato conosco:
               </Text>
-              
+
               <Divider />
-              
+
               <Space direction="vertical">
                 <Text>
                   📞 <strong>Telefone:</strong> (11) 99999-9999
@@ -263,13 +261,13 @@ const Tracking: React.FC = () => {
                   💬 <strong>WhatsApp:</strong> (11) 99999-9999
                 </Text>
               </Space>
-              
+
               <Divider />
-              
+
               <Text type="secondary" style={{ fontSize: '12px' }}>
                 * Os prazos de entrega podem variar conforme a localidade e condições climáticas.
-                <br />
-                * Para pedidos com pagamento via PIX, o prazo de entrega inicia após a confirmação do pagamento.
+                <br />* Para pedidos com pagamento via PIX, o prazo de entrega inicia após a
+                confirmação do pagamento.
               </Text>
             </Space>
           </Card>
@@ -280,4 +278,3 @@ const Tracking: React.FC = () => {
 };
 
 export default Tracking;
-

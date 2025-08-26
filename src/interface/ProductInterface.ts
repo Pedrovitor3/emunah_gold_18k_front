@@ -1,5 +1,5 @@
-import type CategoryInterface from "./CategoryInterface";
-import type { ProductImageInterface } from "./ProductImageInterface";
+import type CategoryInterface from './CategoryInterface';
+import type { ProductImageInterface } from './ProductImageInterface';
 
 export interface ProductInterface {
   id: string;

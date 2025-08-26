@@ -1,4 +1,4 @@
-
+import type { ProductInterface } from '../interface/ProductInterface';
 
 export interface User {
   id: string;
@@ -9,38 +9,6 @@ export interface User {
   is_admin: boolean;
   created_at: string;
   updated_at: string;
-}
-
-export interface Product {
-  id: string;
-  category_id: string;
-  name: string;
-  description?: string;
-  sku: string;
-  price: number;
-  weight?: number | null;
-  gold_purity?: string;
-  stock_quantity: number;
-  is_active: boolean;
-  featured: boolean;
-  created_at: string;
-  updated_at: string;
-  category?: {
-    name: string;
-    slug: string;
-    description?: string;
-  };
-  images?: ProductImage[];
-}
-
-export interface ProductImage {
-  id: string;
-  product_id: string;
-  image_url: string;
-  alt_text?: string;
-  is_primary: boolean;
-  sort_order: number;
-  created_at: string;
 }
 
 export interface Category {
@@ -61,7 +29,7 @@ export interface CartItem {
   quantity: number;
   created_at: string;
   updated_at: string;
-  product?: Product;
+  product: ProductInterface;
 }
 
 export interface Order {
@@ -90,7 +58,7 @@ export interface OrderItem {
   unit_price: number;
   total_price: number;
   created_at: string;
-  product?: Product;
+  product: ProductInterface;
 }
 
 export interface ShippingAddress {
@@ -109,19 +77,19 @@ export enum OrderStatus {
   PROCESSING = 'processing',
   SHIPPED = 'shipped',
   DELIVERED = 'delivered',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum PaymentMethod {
   CREDIT_CARD = 'credit_card',
-  PIX = 'pix'
+  PIX = 'pix',
 }
 
 export enum PaymentStatus {
   PENDING = 'pending',
   PAID = 'paid',
   FAILED = 'failed',
-  REFUNDED = 'refunded'
+  REFUNDED = 'refunded',
 }
 
 export interface ApiResponse<T = any> {
@@ -161,11 +129,10 @@ export interface RegisterData {
 
 export interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, quantity?: number) => void;
+  addItem: (product: ProductInterface, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   total: number;
   itemCount: number;
 }
-

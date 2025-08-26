@@ -1,17 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  Row,
-  Col,
-  Input,
-  Select,
-  Typography,
-  Empty,
-  Pagination,
-} from 'antd';
-import {
-  FilterOutlined,
-} from '@ant-design/icons';
+import { Card, Row, Col, Input, Select, Typography, Empty, Pagination } from 'antd';
+import { FilterOutlined } from '@ant-design/icons';
 import type { ProductInterface } from '../../interface/ProductInterface';
 import { getProducts } from '../../services/productService';
 import ProductCard from '../../components/Card/ProductCard';
@@ -21,7 +10,7 @@ const { Search } = Input;
 const { Option } = Select;
 
 const ProductsPage: React.FC = () => {
-  const [products, setProducts] = useState<ProductInterface[]>([])
+  const [products, setProducts] = useState<ProductInterface[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
@@ -29,13 +18,13 @@ const ProductsPage: React.FC = () => {
   const pageSize = 8;
 
   useEffect(() => {
-    loadProducts()
-  }, [])
+    loadProducts();
+  }, []);
 
-  const loadProducts = async () =>{
-    const response = await getProducts()
-    console.log(response.data)
-    setProducts(response.data)
+  const loadProducts = async () => {
+    const response = await getProducts();
+    console.log(response.data);
+    setProducts(response.data);
   };
 
   const categories = [
@@ -53,13 +42,12 @@ const ProductsPage: React.FC = () => {
     { value: 'rating', label: 'Melhor Avaliação' },
   ];
 
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category.name === selectedCategory;
+    const matchesCategory =
+      selectedCategory === 'all' || product.category.name === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
-
 
   return (
     <div style={{ padding: '24px 0', background: '#fafafa', minHeight: '100vh' }}>
@@ -103,7 +91,7 @@ const ProductsPage: React.FC = () => {
                 size="large"
                 suffixIcon={<FilterOutlined />}
               >
-                {categories.map(cat => (
+                {categories.map((cat) => (
                   <Option key={cat.value} value={cat.value}>
                     {cat.label}
                   </Option>
@@ -118,7 +106,7 @@ const ProductsPage: React.FC = () => {
                 size="large"
                 placeholder="Ordenar por"
               >
-                {sortOptions.map(option => (
+                {sortOptions.map((option) => (
                   <Option key={option.value} value={option.value}>
                     {option.label}
                   </Option>
@@ -137,7 +125,7 @@ const ProductsPage: React.FC = () => {
         {filteredProducts.length > 0 ? (
           <>
             <Row gutter={[24, 24]}>
-              {filteredProducts.map(product => (
+              {filteredProducts.map((product) => (
                 <Col key={product.id} xs={24} sm={12} lg={8} xl={6}>
                   <ProductCard product={product} />
                 </Col>
@@ -153,9 +141,7 @@ const ProductsPage: React.FC = () => {
                 onChange={setCurrentPage}
                 showSizeChanger={false}
                 showQuickJumper
-                showTotal={(total, range) =>
-                  `${range[0]}-${range[1]} de ${total} produtos`
-                }
+                showTotal={(total, range) => `${range[0]}-${range[1]} de ${total} produtos`}
                 style={{ fontSize: 14 }}
               />
             </div>

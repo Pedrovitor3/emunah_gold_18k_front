@@ -1,32 +1,22 @@
-
 import React, { useEffect, useState } from 'react';
-import { 
-  Row, 
-  Col, 
-  Typography, 
-  Button, 
-  Card, 
-  Space, 
-  Spin,
-  message
-} from 'antd';
-import { 
-  ShoppingCartOutlined, 
+import { Row, Col, Typography, Button, Card, Space, Spin, message } from 'antd';
+import {
+  ShoppingCartOutlined,
   StarOutlined,
   SafetyOutlined,
   TruckOutlined,
-  CreditCardOutlined
+  CreditCardOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Product } from '../../types';
 import { useCart } from '../../contexts/CartContext';
 import { getFeaturedProducts } from '../../services/productService';
+import type { ProductInterface } from '../../interface/ProductInterface';
 
 const { Title, Paragraph, Text } = Typography;
 const { Meta } = Card;
 
 const Home: React.FC = () => {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<ProductInterface[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { addItem } = useCart();
@@ -46,73 +36,77 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: ProductInterface) => {
     addItem(product, 1);
   };
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: string | number) => {
+    const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
-      currency: 'BRL'
-    }).format(price);
+      currency: 'BRL',
+    }).format(numericPrice);
   };
 
   return (
     <div>
       {/* Hero Section */}
-      <section style={{ 
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
-        padding: '80px 24px',
-        textAlign: 'center'
-      }}>
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+          padding: '80px 24px',
+          textAlign: 'center',
+        }}
+      >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <Title 
-            level={1} 
-            style={{ 
+          <Title
+            level={1}
+            style={{
               fontSize: '48px',
               fontWeight: 'bold',
               color: '#1a1a1a',
-              marginBottom: '24px'
+              marginBottom: '24px',
             }}
           >
             Elegância em <span style={{ color: '#d4af37' }}>Ouro 18K</span>
           </Title>
-          <Paragraph 
-            style={{ 
+          <Paragraph
+            style={{
               fontSize: '20px',
               color: '#666666',
               maxWidth: '600px',
               margin: '0 auto 40px',
-              lineHeight: '1.6'
+              lineHeight: '1.6',
             }}
           >
-            Descubra nossa coleção exclusiva de joias em ouro 18K. 
-            Qualidade excepcional, designs únicos e a tradição que você merece.
+            Descubra nossa coleção exclusiva de joias em ouro 18K. Qualidade excepcional, designs
+            únicos e a tradição que você merece.
           </Paragraph>
           <Space size="large">
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               size="large"
               onClick={() => navigate('/products')}
-              style={{ 
+              style={{
                 backgroundColor: '#d4af37',
                 borderColor: '#d4af37',
                 height: '48px',
                 padding: '0 32px',
                 fontSize: '16px',
-                borderRadius: '8px'
+                borderRadius: '8px',
               }}
             >
               Ver Produtos
             </Button>
-            <Button 
+            <Button
               size="large"
               onClick={() => navigate('/about')}
-              style={{ 
+              style={{
                 height: '48px',
                 padding: '0 32px',
                 fontSize: '16px',
-                borderRadius: '8px'
+                borderRadius: '8px',
               }}
             >
               Sobre Nós
@@ -144,57 +138,63 @@ const Home: React.FC = () => {
                   <Card
                     hoverable
                     cover={
-                      <div style={{ 
-                        height: '280px', 
-                        background: '#f5f5f5',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden'
-                      }}>
+                      <div
+                        style={{
+                          height: '280px',
+                          background: '#f5f5f5',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          overflow: 'hidden',
+                        }}
+                      >
                         {product.images && product.images.length > 0 ? (
-                          <img 
-                            src={product.images[0].image_url} 
+                          <img
+                            src={product.images[0].image_url}
                             alt={product.images[0].alt_text || product.name}
-                            style={{ 
-                              width: '100%', 
-                              height: '100%', 
-                              objectFit: 'cover' 
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
                             }}
                           />
                         ) : (
-                          <div style={{ 
-                            color: '#d4af37', 
-                            fontSize: '48px' 
-                          }}>
+                          <div
+                            style={{
+                              color: '#d4af37',
+                              fontSize: '48px',
+                            }}
+                          >
                             <StarOutlined />
                           </div>
                         )}
                       </div>
                     }
                     actions={[
-                      <Button 
-                        type="primary" 
+                      <Button
+                        key="add-to-cart"
+                        type="primary"
                         icon={<ShoppingCartOutlined />}
                         onClick={() => handleAddToCart(product)}
-                        style={{ 
+                        style={{
                           backgroundColor: '#d4af37',
-                          borderColor: '#d4af37'
+                          borderColor: '#d4af37',
                         }}
                       >
                         Adicionar
                       </Button>,
-                      <Button 
+                      <Button
+                        key="view-details"
                         type="link"
                         onClick={() => navigate(`/products/${product.id}`)}
                       >
                         Ver Detalhes
-                      </Button>
+                      </Button>,
                     ]}
-                    style={{ 
+                    style={{
                       borderRadius: '12px',
                       overflow: 'hidden',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }}
                   >
                     <Meta
@@ -209,11 +209,14 @@ const Home: React.FC = () => {
                             {product.description?.substring(0, 80)}...
                           </Text>
                           <div style={{ marginTop: '8px' }}>
-                            <Text strong style={{ 
-                              fontSize: '18px', 
-                              color: '#d4af37' 
-                            }}>
-                              {formatPrice(product.price)}
+                            <Text
+                              strong
+                              style={{
+                                fontSize: '18px',
+                                color: '#d4af37',
+                              }}
+                            >
+                              {formatPrice(parseFloat(product.price))}
                             </Text>
                           </div>
                         </div>
@@ -226,14 +229,14 @@ const Home: React.FC = () => {
           )}
 
           <div style={{ textAlign: 'center', marginTop: '48px' }}>
-            <Button 
+            <Button
               size="large"
               onClick={() => navigate('/products')}
-              style={{ 
+              style={{
                 height: '48px',
                 padding: '0 32px',
                 fontSize: '16px',
-                borderRadius: '8px'
+                borderRadius: '8px',
               }}
             >
               Ver Todos os Produtos
@@ -243,10 +246,12 @@ const Home: React.FC = () => {
       </section>
 
       {/* Diferenciais */}
-      <section style={{ 
-        padding: '80px 24px', 
-        backgroundColor: '#f8f9fa' 
-      }}>
+      <section
+        style={{
+          padding: '80px 24px',
+          backgroundColor: '#f8f9fa',
+        }}
+      >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <Title level={2} style={{ color: '#1a1a1a', marginBottom: '16px' }}>
@@ -257,11 +262,13 @@ const Home: React.FC = () => {
           <Row gutter={[32, 32]}>
             <Col xs={24} sm={12} md={6}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '48px', 
-                  color: '#d4af37', 
-                  marginBottom: '16px' 
-                }}>
+                <div
+                  style={{
+                    fontSize: '48px',
+                    color: '#d4af37',
+                    marginBottom: '16px',
+                  }}
+                >
                   <StarOutlined />
                 </div>
                 <Title level={4} style={{ marginBottom: '12px' }}>
@@ -275,11 +282,13 @@ const Home: React.FC = () => {
 
             <Col xs={24} sm={12} md={6}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '48px', 
-                  color: '#d4af37', 
-                  marginBottom: '16px' 
-                }}>
+                <div
+                  style={{
+                    fontSize: '48px',
+                    color: '#d4af37',
+                    marginBottom: '16px',
+                  }}
+                >
                   <SafetyOutlined />
                 </div>
                 <Title level={4} style={{ marginBottom: '12px' }}>
@@ -293,29 +302,31 @@ const Home: React.FC = () => {
 
             <Col xs={24} sm={12} md={6}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '48px', 
-                  color: '#d4af37', 
-                  marginBottom: '16px' 
-                }}>
+                <div
+                  style={{
+                    fontSize: '48px',
+                    color: '#d4af37',
+                    marginBottom: '16px',
+                  }}
+                >
                   <TruckOutlined />
                 </div>
                 <Title level={4} style={{ marginBottom: '12px' }}>
                   Entrega Rápida
                 </Title>
-                <Text style={{ color: '#666666' }}>
-                  Frete grátis e rastreamento em tempo real
-                </Text>
+                <Text style={{ color: '#666666' }}>Frete grátis e rastreamento em tempo real</Text>
               </div>
             </Col>
 
             <Col xs={24} sm={12} md={6}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '48px', 
-                  color: '#d4af37', 
-                  marginBottom: '16px' 
-                }}>
+                <div
+                  style={{
+                    fontSize: '48px',
+                    color: '#d4af37',
+                    marginBottom: '16px',
+                  }}
+                >
                   <CreditCardOutlined />
                 </div>
                 <Title level={4} style={{ marginBottom: '12px' }}>
@@ -334,4 +345,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-
