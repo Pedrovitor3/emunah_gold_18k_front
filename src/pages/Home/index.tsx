@@ -22,6 +22,7 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     loadFeaturedProducts();
@@ -38,10 +39,18 @@ const Home: React.FC = () => {
     }
   };
 
+  const success = () => {
+    messageApi.open({
+      type: 'success',
+      content: 'Produto adicionado ao carrinho com sucesso.',
+    });
+  };
+
   const handleAddToCart = (product: ProductInterface) => {
-    console.log('pro');
     addItem(product, 1);
     addToCart(product.id, 1);
+
+    success();
   };
 
   const formatPrice = (price: string | number) => {
@@ -55,6 +64,8 @@ const Home: React.FC = () => {
 
   return (
     <div>
+      {contextHolder}
+
       {/* Hero Section */}
       <section
         style={{

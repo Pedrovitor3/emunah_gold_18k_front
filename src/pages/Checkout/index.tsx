@@ -463,8 +463,8 @@ const Checkout: React.FC = () => {
               }}
             >
               <Text type="secondary">
-                💡 Este é um ambiente de demonstração. Clique em "Confirmar Pagamento" para simular
-                a aprovação do PIX.
+                💡 Este é um ambiente de demonstração. Clique em Confirmar Pagamento para simular a
+                aprovação do PIX.
               </Text>
             </div>
           </Space>
