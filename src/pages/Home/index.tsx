@@ -12,6 +12,7 @@ import { useCart } from '../../contexts/CartContext';
 import type { ProductInterface } from '../../interface/ProductInterface';
 import { getFeaturedProducts } from '../../services/productService';
 import { ROUTES } from '../../routes/routes';
+import { addToCart } from '../../services/cartService';
 
 const { Title, Paragraph, Text } = Typography;
 const { Meta } = Card;
@@ -38,7 +39,9 @@ const Home: React.FC = () => {
   };
 
   const handleAddToCart = (product: ProductInterface) => {
+    console.log('pro');
     addItem(product, 1);
+    addToCart(product.id, 1);
   };
 
   const formatPrice = (price: string | number) => {
