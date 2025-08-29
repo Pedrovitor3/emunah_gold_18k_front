@@ -294,18 +294,19 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({
                     placeholder="Selecione uma categoria"
                     style={{ flex: 1 }}
                     notFoundContent="Nenhuma categoria encontrada"
-                  >
-                    {categories.map((category) => (
-                      <Option key={category.id} value={category.id}>
+                    // necessário para que o form consiga setar o valor corretamente
+                    options={categories.map((category) => ({
+                      label: (
                         <Space>
                           {category.name}
                           {category.is_active === false && (
                             <span style={{ color: '#ff4d4f', fontSize: '12px' }}>(Inativa)</span>
                           )}
                         </Space>
-                      </Option>
-                    ))}
-                  </Select>
+                      ),
+                      value: category.id,
+                    }))}
+                  />
                   <Tooltip title="Criar nova categoria">
                     <Button
                       icon={<PlusOutlined />}

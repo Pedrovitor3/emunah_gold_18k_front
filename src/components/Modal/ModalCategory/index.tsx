@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Switch, Button, Row, Col, message, Space } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { createCategory } from '../../../services/categoryService';
 
 const { TextArea } = Input;
 
@@ -31,8 +32,9 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
     try {
       setLoading(true);
 
+      const { name, slug, description, is_active } = values;
       // TODO: Implementar criação de categoria
-      // const newCategory = await createCategory(values);
+      const newCategory = await createCategory(name, slug, description, is_active);
 
       // Simulação da API por enquanto
       const categoryData = {
