@@ -60,6 +60,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [skuValidating, setSkuValidating] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
+  const [formInitialized, setFormInitialized] = useState(false);
 
   const isEditing = product ? true : false;
   const modalTitle = isEditing ? 'Editar Produto' : 'Criar Novo Produto';
@@ -68,28 +69,39 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   useEffect(() => {
     if (visible) {
+      setFormInitialized(false);
       const initializeModal = async () => {
-        // Primeiro carregar as categorias
-        await loadCategories();
+        try {
+          // Primeiro carregar as categorias
+          await loadCategories();
 
-        if (isEditing && product) {
-          // Depois preencher formulário com dados do produto
-          populateForm(product);
-        } else {
-          // Limpar formulário para criação
-          form.resetFields();
-          setFileList([]);
+          if (isEditing && product) {
+            // Depois preencher formulário com dados do produto
+            await populateForm(product);
+          } else {
+            // Limpar formulário para criação
+            form.resetFields();
+            setFileList([]);
+          }
+
+          setFormInitialized(true);
+        } catch (error) {
+          console.error('Erro ao inicializar modal:', error);
+          message.error('Erro ao carregar dados do modal');
         }
       };
 
       initializeModal();
+    } else {
+      // Reset quando modal fecha
+      setFormInitialized(false);
+      form.resetFields();
+      setFileList([]);
     }
-  }, [visible, form, isEditing, product]);
+  }, [visible, isEditing, product?.id]); // Adicionar product.id como dependência
 
   // Função populateForm atualizada
-  const populateForm = (productData: ProductInterface) => {
-    console.log('productdata', productData);
-
+  const populateForm = async (productData: ProductInterface) => {
     // Converter strings para numbers onde necessário
     const price =
       typeof productData.price === 'string' ? parseFloat(productData.price) : productData.price;
@@ -102,23 +114,31 @@ const ProductModal: React.FC<ProductModalProps> = ({
         ? parseInt(productData.stock_quantity, 10)
         : productData.stock_quantity;
 
-    // Aguardar um tick para garantir que o DOM foi atualizado
-    setTimeout(() => {
-      form.setFieldsValue({
-        category_id: productData.category || productData.category_id,
-        name: productData.name || '',
-        description: productData.description || '',
-        sku: productData.sku || '',
-        price: price || 0,
-        weight: weight || undefined,
-        gold_purity: productData.gold_purity || undefined,
-        stock_quantity: stockQuantity || 0,
-        is_active: productData.is_active ?? true,
-        featured: productData.featured ?? false,
-      });
+    // Preparar os valores do formulário
+    const formValues = {
+      category_id: productData.category?.id || productData.category_id,
+      name: productData.name || '',
+      description: productData.description || '',
+      sku: productData.sku || '',
+      price: price || 0,
+      weight: weight || null,
+      gold_purity: productData.gold_purity || null,
+      stock_quantity: stockQuantity || 0,
+      is_active: productData.is_active ?? true,
+      featured: productData.featured ?? false,
+    };
 
-      console.log('Form values set:', form.getFieldsValue());
-    }, 100);
+    // Usar pequeno delay para garantir que as categorias foram carregadas
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Resetar formulário primeiro
+    form.resetFields();
+
+    // Aguardar um pouco mais para o reset
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    // Definir todos os valores de uma vez
+    form.setFieldsValue(formValues);
 
     // Preencher lista de imagens
     if (productData.images && productData.images.length > 0) {
@@ -139,8 +159,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
     try {
       const response = await getCategories();
       setCategories(response.data);
+      return response.data;
     } catch (error) {
+      console.error('Erro ao carregar categorias:', error);
       message.error('Erro ao carregar categorias');
+      throw error;
     }
   };
 
@@ -230,8 +253,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
         message.success('Produto criado com sucesso!');
       }
 
-      console.log('Resultado da operação:', result);
-
       onSuccess(result || productData);
       handleCancel();
     } catch (error: any) {
@@ -246,6 +267,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
     form.resetFields();
     setFileList([]);
     setCategoryModalVisible(false);
+    setFormInitialized(false);
     onCancel();
   };
 
@@ -337,6 +359,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const goldPurityOptions = ['18k', '14k', '10k', '24k', '22k', '16k', '12k', '9k'];
 
+  // Não renderizar o formulário até que esteja totalmente inicializado
+  if (visible && !formInitialized) {
+    return (
+      <Modal
+        title={modalTitle}
+        open={visible}
+        onCancel={handleCancel}
+        footer={null}
+        width="90%"
+        style={{ maxWidth: '1200px' }}
+      >
+        <div style={{ textAlign: 'center', padding: '50px' }}>Carregando...</div>
+      </Modal>
+    );
+  }
+
   return (
     <>
       <Modal
@@ -359,11 +397,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          initialValues={{
-            is_active: true,
-            featured: false,
-            stock_quantity: 0,
-          }}
+          preserve={false} // Importante: não preservar valores entre renderizações
         >
           <div
             style={{
@@ -384,6 +418,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     { required: true, message: 'Nome é obrigatório' },
                     { min: 3, message: 'Nome deve ter pelo menos 3 caracteres' },
                   ]}
+                  initialValue={form.getFieldValue('name')}
                 >
                   <Input placeholder="Digite o nome do produto" />
                 </Form.Item>
@@ -402,6 +437,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   ]}
                   hasFeedback
                   validateStatus={skuValidating ? 'validating' : undefined}
+                  initialValue={form.getFieldValue('sku')}
                 >
                   <Input
                     placeholder="EX: PROD-001"
@@ -412,7 +448,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
               </Col>
 
               <Col xs={24} sm={24} md={24} lg={20} xl={20}>
-                <Form.Item name="description" label="Descrição">
+                <Form.Item
+                  name="description"
+                  label="Descrição"
+                  initialValue={form.getFieldValue('description')}
+                >
                   <TextArea
                     rows={4}
                     placeholder="Descreva o produto..."
@@ -427,23 +467,26 @@ const ProductModal: React.FC<ProductModalProps> = ({
                   name="category_id"
                   label="Categoria"
                   rules={[{ required: true, message: 'Categoria é obrigatória' }]}
-                  initialValue={product?.category.id}
+                  initialValue={form.getFieldValue('category_id')}
                 >
                   <Space.Compact style={{ width: '100%' }}>
                     <Select
                       placeholder="Selecione uma categoria"
                       style={{ flex: 1 }}
+                      value={form.getFieldValue('category_id')}
                       onChange={(value) => {
-                        form.setFields([
-                          {
-                            name: 'category_id',
-                            value: value,
-                          },
-                        ]);
+                        form.setFieldValue('category_id', value);
                       }}
+                      showSearch
+                      optionFilterProp="children"
+                      filterOption={(input, option) =>
+                        (option?.children as unknown as string)
+                          ?.toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                     >
-                      {categories.map((category, index) => (
-                        <Option key={index} value={category.id}>
+                      {categories.map((category) => (
+                        <Option key={category.id} value={category.id}>
                           {category.name}
                         </Option>
                       ))}
@@ -467,6 +510,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 <Form.Item
                   name="price"
                   label="Preço (R$)"
+                  initialValue={form.getFieldValue('price')}
                   rules={[
                     { required: true, message: 'Preço é obrigatório' },
                     { type: 'number', min: 0.01, message: 'Preço deve ser maior que 0' },
@@ -488,7 +532,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
             <Row gutter={[16, 16]} justify="center">
               <Col xs={24} sm={12} md={8} lg={6} xl={6}>
-                <Form.Item name="weight" label="Peso (g)">
+                <Form.Item
+                  name="weight"
+                  label="Peso (g)"
+                  initialValue={form.getFieldValue('weight')}
+                >
                   <InputNumber
                     style={{ width: '100%' }}
                     placeholder="0.00"
@@ -500,7 +548,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
               </Col>
 
               <Col xs={24} sm={12} md={8} lg={7} xl={7}>
-                <Form.Item name="gold_purity" label="Pureza do Ouro">
+                <Form.Item
+                  name="gold_purity"
+                  label="Pureza do Ouro"
+                  initialValue={form.getFieldValue('gold_purity')}
+                >
                   <Select placeholder="Selecione a pureza" allowClear>
                     {goldPurityOptions.map((purity) => (
                       <Option key={purity} value={purity}>
@@ -512,7 +564,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
               </Col>
 
               <Col xs={24} sm={12} md={8} lg={7} xl={7}>
-                <Form.Item name="stock_quantity" label="Quantidade em Estoque">
+                <Form.Item
+                  name="stock_quantity"
+                  label="Quantidade em Estoque"
+                  initialValue={form.getFieldValue('stock_quantity')}
+                >
                   <InputNumber style={{ width: '100%' }} placeholder="0" min={0} />
                 </Form.Item>
               </Col>
@@ -523,13 +579,23 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
             <Row gutter={[16, 16]} justify="center">
               <Col xs={24} sm={12} md={10} lg={10} xl={10}>
-                <Form.Item name="is_active" label="Produto Ativo" valuePropName="checked">
+                <Form.Item
+                  name="is_active"
+                  label="Produto Ativo"
+                  valuePropName="checked"
+                  initialValue={form.getFieldValue('is_active')}
+                >
                   <Switch />
                 </Form.Item>
               </Col>
 
               <Col xs={24} sm={12} md={10} lg={10} xl={10}>
-                <Form.Item name="featured" label="Produto em Destaque" valuePropName="checked">
+                <Form.Item
+                  name="featured"
+                  label="Produto em Destaque"
+                  valuePropName="checked"
+                  initialValue={form.getFieldValue('featured')}
+                >
                   <Switch />
                 </Form.Item>
               </Col>
