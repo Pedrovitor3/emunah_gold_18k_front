@@ -1,4 +1,3 @@
-// ProductsPage.tsx - Versão simplificada com admin
 import React, { useEffect, useState } from 'react';
 import {
   Card,
@@ -28,7 +27,7 @@ import { getCategories } from '../../services/categoryService';
 import CategoryInterface from '../../interface/CategoryInterface';
 import ProductCard from '../../components/Card/ProductCard.ts';
 import { useAuth } from '../../contexts/AuthContext';
-import CreateProductModal from '../../components/Modal/ModalProduct';
+import ProductModal from '../../components/Modal/ModalProduct';
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -39,7 +38,9 @@ const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<ProductInterface[]>([]);
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [loading, setLoading] = useState(false);
-  const [createModalVisible, setCreateModalVisible] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] = useState<ProductInterface | null>();
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -76,30 +77,25 @@ const ProductsPage: React.FC = () => {
 
   // Handlers Admin
   const handleCreateProduct = () => {
-    setCreateModalVisible(true);
+    setShowModal(true);
   };
 
-  const handleCreateProductSuccess = (newProduct: any) => {
+  const handleModalProductSuccess = (newProduct: any) => {
     // Adicionar o novo produto à lista
     setProducts((prev) => [newProduct, ...prev]);
-    setCreateModalVisible(false);
+    setShowModal(false);
     message.success('Produto criado com sucesso!');
   };
 
-  const handleCreateProductCancel = () => {
-    setCreateModalVisible(false);
+  const handleModalProductCancel = () => {
+    setSelectedProduct(null);
+    setShowModal(false);
   };
 
   const handleEditProduct = (productId: string) => {
-    // Implementar navegação ou modal para editar produto
-    Modal.info({
-      title: 'Editar Produto',
-      content: `Redirecionando para edição do produto ${productId}...`,
-      onOk: () => {
-        // navigate(`/admin/products/edit/${productId}`);
-        console.log('Navegar para edição do produto:', productId);
-      },
-    });
+    const productFiltered = products.find((p) => p.id === productId);
+    setSelectedProduct(productFiltered);
+    setShowModal(true);
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -133,17 +129,6 @@ const ProductsPage: React.FC = () => {
           message.error('Erro ao excluir produto');
           console.error('Erro:', error);
         }
-      },
-    });
-  };
-
-  const handleBulkActions = () => {
-    Modal.info({
-      title: 'Ações em Lote',
-      content: 'Redirecionando para página de gerenciamento...',
-      onOk: () => {
-        // navigate('/admin/products/manage');
-        console.log('Navegar para gerenciamento em lote');
       },
     });
   };
@@ -209,10 +194,7 @@ const ProductsPage: React.FC = () => {
                 <Col>
                   <Space>
                     <Text strong style={{ color: '#0369a1' }}>
-                      🛠️ Painel Administrativo
-                    </Text>
-                    <Text style={{ color: '#0284c7', fontSize: 12 }}>
-                      Gerencie produtos e categorias
+                      Painel Administrativo
                     </Text>
                   </Space>
                 </Col>
@@ -229,11 +211,6 @@ const ProductsPage: React.FC = () => {
                         }}
                       >
                         Novo Produto
-                      </Button>
-                    </Tooltip>
-                    <Tooltip title="Gerenciar produtos em lote">
-                      <Button icon={<EditOutlined />} onClick={handleBulkActions}>
-                        Gerenciar
                       </Button>
                     </Tooltip>
                   </Space>
@@ -311,7 +288,7 @@ const ProductsPage: React.FC = () => {
               {paginatedProducts.map((product) => (
                 <Col key={product.id} xs={24} sm={12} lg={8} xl={6}>
                   <div style={{ position: 'relative' }}>
-                    <ProductCard product={product} />
+                    <ProductCard product={product} onEdit={handleEditProduct} />
 
                     {/* Botões Admin sobrepostos */}
                     {user?.is_admin && (
@@ -408,10 +385,11 @@ const ProductsPage: React.FC = () => {
       </div>
 
       {/* Modal para criar produto */}
-      <CreateProductModal
-        visible={createModalVisible}
-        onCancel={handleCreateProductCancel}
-        onSuccess={handleCreateProductSuccess}
+      <ProductModal
+        visible={showModal}
+        onCancel={handleModalProductCancel}
+        onSuccess={handleModalProductSuccess}
+        product={selectedProduct}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Button, Typography, Dropdown, Space } from 'antd';
 import {
   ShoppingCartOutlined,
@@ -13,6 +13,8 @@ import type { ProductInterface } from '../../../interface/ProductInterface';
 import { useCart } from '../../../contexts/CartContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { MenuProps } from 'antd';
+import CreateProductModal from '../../Modal/ModalProduct';
+import ProductModal from '../../Modal/ModalProduct';
 
 const { Meta } = Card;
 const { Text } = Typography;
@@ -140,20 +142,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) 
     >
       Adicionar
     </Button>,
-    <Button
-      key="edit"
-      icon={<EditOutlined />}
-      onClick={handleEdit}
-      style={{
-        color: '#0369a1',
-        borderColor: '#0369a1',
-      }}
-    >
-      Editar
-    </Button>,
-    <Dropdown menu={{ items: adminMenuItems }} trigger={['click']}>
-      <Button key="more" icon={<MoreOutlined />} onClick={(e) => e.stopPropagation()} />
-    </Dropdown>,
+    // <Button
+    //   key="edit"
+    //   icon={<EditOutlined />}
+    //   onClick={handleEdit}
+    //   style={{
+    //     color: '#0369a1',
+    //     borderColor: '#0369a1',
+    //   }}
+    // >
+    //   Editar
+    // </Button>,
+    // <Dropdown menu={{ items: adminMenuItems }} trigger={['click']}>
+    //   <Button key="more" icon={<MoreOutlined />} onClick={(e) => e.stopPropagation()} />
+    // </Dropdown>,
   ];
 
   return (
@@ -258,7 +260,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onEdit, onDelete }) 
                     color: '#0369a1',
                   }}
                 >
-                  ID: {product.id} • {product.category?.name || 'Sem categoria'}
+                  {/* ID: {product.id} • */}
+                  {product.category?.name || 'Sem categoria'}
                 </Text>
               )}
             </Space>

@@ -40,6 +40,40 @@ export const createProduct = async (
   }
 };
 
+export const updateProduct = async (
+  id: string,
+  productData: {
+    category_id: string;
+    name: string;
+    price: number;
+    description?: string;
+    sku?: string;
+    weight?: number;
+    gold_purity?: string;
+    stock_quantity?: number;
+    is_active?: boolean;
+    featured?: boolean;
+    images?: Array<{
+      id?: string;
+      image_url: string;
+      alt_text: string;
+    }>;
+  }
+) => {
+  try {
+    const response: AxiosResponse = await apiClient.put(`/products/${id}`, productData);
+
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Erro ao atualizar produto');
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    console.log('erro ao atualizar produto', error);
+    throw new Error(error.response?.data?.message || 'Erro ao atualizar produto');
+  }
+};
+
 export const getProducts = async (params?: {
   page?: number;
   limit?: number;
