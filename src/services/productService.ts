@@ -74,6 +74,21 @@ export const updateProduct = async (
   }
 };
 
+export const deleteProduct = async (id: string) => {
+  try {
+    const response: AxiosResponse = await apiClient.delete(`/products/${id}`);
+
+    if (!response.data.success) {
+      throw new Error(response.data.error || 'Erro ao deletar produto');
+    }
+
+    return response.data.data;
+  } catch (error: any) {
+    console.log('erro ao deletar produto', error);
+    throw new Error(error.response?.data?.message || 'Erro ao deletar produto');
+  }
+};
+
 export const getProducts = async (params?: {
   page?: number;
   limit?: number;

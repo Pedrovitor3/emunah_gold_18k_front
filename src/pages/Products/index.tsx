@@ -22,7 +22,7 @@ import {
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import type { ProductInterface } from '../../interface/ProductInterface';
-import { getProducts } from '../../services/productService';
+import { deleteProduct, getProducts } from '../../services/productService';
 import { getCategories } from '../../services/categoryService';
 import CategoryInterface from '../../interface/CategoryInterface';
 import ProductCard from '../../components/Card/ProductCard.ts';
@@ -97,40 +97,43 @@ const ProductsPage: React.FC = () => {
     setSelectedProduct(productFiltered);
     setShowModal(true);
   };
-
-  const handleDeleteProduct = (productId: string) => {
+  const handleDeleteProduct = async (productId: string) => {
     const product = products.find((p) => p.id === productId);
-    if (!product) return;
+    if (!product) {
+      message.error('Produto não encontrado');
+      return;
+    }
 
-    Modal.confirm({
-      title: 'Confirmar Exclusão',
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <div>
-          <p>Tem certeza que deseja excluir o produto:</p>
-          <p>
-            <strong>{product.name}</strong>
-          </p>
-          <p style={{ color: '#ff4d4f', fontSize: '14px' }}>Esta ação não pode ser desfeita.</p>
-        </div>
-      ),
-      okText: 'Sim, Excluir',
-      okType: 'danger',
-      cancelText: 'Cancelar',
-      onOk: async () => {
-        try {
-          // Aqui você faria a chamada para sua API de delete
-          // await deleteProduct(productId);
+    // Alert simples de confirmação
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir o produto "${product.name}"?\n\nEsta ação não pode ser desfeita.`
+    );
 
-          // Por enquanto, apenas remove do estado local
-          setProducts((prev) => prev.filter((p) => p.id !== productId));
-          message.success('Produto excluído com sucesso!');
-        } catch (error) {
-          message.error('Erro ao excluir produto');
-          console.error('Erro:', error);
-        }
-      },
-    });
+    if (!confirmed) {
+      return; // Usuário cancelou
+    }
+
+    try {
+      // Mostrar loading
+      const hideLoading = message.loading('Excluindo produto...', 0);
+
+      // Chamada para API de delete
+      await deleteProduct(productId);
+
+      // Remover do estado local
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+
+      // Esconder loading e mostrar sucesso
+      hideLoading();
+      message.success('Produto excluído com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao excluir produto:', error);
+
+      // Mostrar erro específico se disponível
+      const errorMessage =
+        error?.response?.data?.error || error?.message || 'Erro ao excluir produto';
+      message.error(errorMessage);
+    }
   };
 
   const sortOptions = [
@@ -288,7 +291,11 @@ const ProductsPage: React.FC = () => {
               {paginatedProducts.map((product) => (
                 <Col key={product.id} xs={24} sm={12} lg={8} xl={6}>
                   <div style={{ position: 'relative' }}>
-                    <ProductCard product={product} onEdit={handleEditProduct} />
+                    <ProductCard
+                      product={product}
+                      onEdit={handleEditProduct}
+                      onDelete={handleDeleteProduct}
+                    />
 
                     {/* Botões Admin sobrepostos */}
                     {user?.is_admin && (

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { Card, Button, Typography, Dropdown, Space } from 'antd';
+import React from 'react';
+import { Card, Button, Typography, Space } from 'antd';
 import {
   ShoppingCartOutlined,
   StarOutlined,
   EditOutlined,
   DeleteOutlined,
-  MoreOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
 import { useAppNavigation } from '../../../hooks/useNavigation';
@@ -13,8 +12,6 @@ import type { ProductInterface } from '../../../interface/ProductInterface';
 import { useCart } from '../../../contexts/CartContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { MenuProps } from 'antd';
-import CreateProductModal from '../../Modal/ModalProduct';
-import ProductModal from '../../Modal/ModalProduct';
 
 const { Meta } = Card;
 const { Text } = Typography;
