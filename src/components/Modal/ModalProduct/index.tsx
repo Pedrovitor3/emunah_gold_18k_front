@@ -23,6 +23,7 @@ import CreateCategoryModal from '../ModalCategory';
 import { createProduct, updateProduct } from '../../../services/productService';
 import type { ProductInterface } from '../../../interface/ProductInterface';
 import type { RcFile } from 'antd/lib/upload';
+import { uploadFileToStorage, uploadProductImages } from '../../../services/productImageService';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -46,6 +47,13 @@ interface ProductModalProps {
   onCancel: () => void;
   onSuccess: (product: any) => void;
   product?: ProductInterface | null; // Produto para edição (null/undefined para criação)
+}
+interface UploadImageInput {
+  product_id: string;
+  image_url: string;
+  alt_text: string;
+  is_primary: boolean;
+  sort_order: number;
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({
@@ -178,50 +186,22 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
       const existingImages = fileList
         .filter((file) => file.response?.url || file.url)
-        .map((file) => ({
+        .map((file, index) => ({
           id: file.uid.startsWith('existing-') ? file.uid.replace('existing-', '') : undefined,
-          image_url: file.response?.url || file.url,
+          image_url: file.response?.url || file.url!,
           alt_text: file.name || `${values.name} - Imagem`,
+          is_primary: index === 0, // Primeira imagem como principal
+          sort_order: index,
         }));
 
-      let newImageUrls: string[] = [];
-
-      // Upload das imagens novas (se houver)
-      if (newImageFiles.length > 0) {
-        try {
-          // TODO: Implementar upload de imagens
-          // newImageUrls = await uploadProductImages(newImageFiles);
-          console.log('Arquivos para upload:', newImageFiles);
-          // Por enquanto, simular URLs das novas imagens
-          newImageUrls = newImageFiles.map(
-            (_, index) => `https://example.com/new-image-${Date.now()}-${index}.jpg`
-          );
-        } catch (error) {
-          message.error('Erro no upload das imagens');
-          return;
-        }
-      }
-
-      // Combinar imagens existentes com novas
-      const allImages = [
-        ...existingImages,
-        ...newImageUrls.map((url, index) => ({
-          image_url: url,
-          alt_text: `${values.name} - Nova Imagem ${index + 1}`,
-        })),
-      ];
-
-      // Preparar dados do produto
-      const productData: CreateProductBody & { images?: any[] } = {
-        ...values,
-        images: allImages,
-      };
-
+      // Primeiro: Criar ou atualizar o produto
       let result;
+      let productId: string;
 
       if (isEditing && product) {
         // Atualizar produto existente
-        result = await updateProduct(product.id!, productData);
+        result = await updateProduct(product.id!, values);
+        productId = product.id!;
         message.success('Produto atualizado com sucesso!');
       } else {
         // Criar novo produto
@@ -236,7 +216,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
           stock_quantity,
           is_active,
           featured,
-        } = productData;
+        } = values;
 
         result = await createProduct(
           category_id,
@@ -250,10 +230,37 @@ const ProductModal: React.FC<ProductModalProps> = ({
           is_active,
           featured
         );
+        productId = result.id; // API deve retornar o produto criado com ID
         message.success('Produto criado com sucesso!');
       }
 
-      onSuccess(result || productData);
+      // Segundo: Processar as imagens se existirem
+      if (newImageFiles.length > 0) {
+        try {
+          // 1. Upload dos arquivos para obter URLs
+          const uploadPromises = newImageFiles.map((file) => uploadFileToStorage(file));
+          const newImageUrls = await Promise.all(uploadPromises);
+
+          // 2. Preparar dados das imagens para o banco
+          const imagesToCreate: UploadImageInput[] = newImageUrls.map((url, index) => ({
+            product_id: productId,
+            image_url: url,
+            alt_text: `${values.name} - Imagem ${index + 1}`,
+            is_primary: existingImages.length === 0 && index === 0, // Primeira nova imagem é principal se não há existentes
+            sort_order: existingImages.length + index,
+          }));
+
+          // 3. Salvar registros das imagens no banco
+          await uploadProductImages(imagesToCreate);
+
+          console.log('Imagens processadas com sucesso');
+        } catch (error) {
+          console.error('Erro ao processar imagens:', error);
+          message.warning('Produto salvo, mas houve erro ao processar algumas imagens');
+        }
+      }
+
+      onSuccess(result || values);
       handleCancel();
     } catch (error: any) {
       console.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} produto:`, error);
