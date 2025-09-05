@@ -2,32 +2,22 @@ import type { AxiosResponse } from 'axios';
 import type { ApiResponse } from '../types';
 import { apiClient } from './baseService/axiosConfig';
 import type { ProductInterface } from '../interface/ProductInterface';
+interface ProductData {
+  category_id: string;
+  name: string;
+  price: number;
+  description?: string;
+  sku?: string;
+  weight?: number;
+  gold_purity?: string;
+  stock_quantity?: number;
+  is_active?: boolean;
+  featured?: boolean;
+}
 
-export const createProduct = async (
-  category_id: string,
-  name: string,
-  price: number,
-  description?: string,
-  sku?: string,
-  weight?: number,
-  gold_purity?: string,
-  stock_quantity?: number,
-  is_active?: boolean,
-  featured?: boolean
-) => {
+export const createProduct = async (data: ProductData) => {
   try {
-    const response: AxiosResponse = await apiClient.post('/products', {
-      category_id,
-      name,
-      description,
-      sku,
-      price,
-      weight,
-      gold_purity,
-      stock_quantity,
-      is_active,
-      featured,
-    });
+    const response: AxiosResponse = await apiClient.post('/products', data);
 
     if (!response.data.success) {
       throw new Error(response.data.error || 'Erro ao criar produto');
