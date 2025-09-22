@@ -23,6 +23,8 @@ import CreateCategoryModal from '../ModalCategory';
 import { createProduct, updateProduct } from '../../../services/productService';
 import type { ProductInterface } from '../../../interface/ProductInterface';
 import type { RcFile } from 'antd/lib/upload';
+import type { UploadProgress } from '../../../interface/UploadInterface';
+import { uploadProductImages } from '../../../services/uploadService';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -180,24 +182,47 @@ const ProductModal: React.FC<ProductModalProps> = ({
         .filter((file) => file.response?.url || file.url)
         .map((file) => ({
           id: file.uid.startsWith('existing-') ? file.uid.replace('existing-', '') : undefined,
-          image_url: file.response?.url || file.url,
+          image_url: file.response?.url || file.url || '',
           alt_text: file.name || `${values.name} - Imagem`,
         }));
 
       let newImageUrls: string[] = [];
 
-      // Upload das imagens novas (se houver)
+      // Upload das imagens novas via backend
       if (newImageFiles.length > 0) {
         try {
-          // TODO: Implementar upload de imagens
-          // newImageUrls = await uploadProductImages(newImageFiles);
-          console.log('Arquivos para upload:', newImageFiles);
-          // Por enquanto, simular URLs das novas imagens
-          newImageUrls = newImageFiles.map(
-            (_, index) => `https://example.com/new-image-${Date.now()}-${index}.jpg`
-          );
+          let uploadMessageKey: any;
+
+          // Callback para progresso do upload
+          const onProgress = (progress: UploadProgress) => {
+            // Destruir mensagem anterior se existir
+            if (uploadMessageKey) {
+              message.destroy(uploadMessageKey);
+            }
+
+            // Mostrar nova mensagem com progresso
+            uploadMessageKey = message.loading(`Enviando imagens... ${progress.percentage}%`, 0);
+          };
+
+          // Mostrar mensagem inicial
+          uploadMessageKey = message.loading('Iniciando upload das imagens...', 0);
+
+          // Fazer upload via backend
+          newImageUrls = await uploadProductImages(newImageFiles, values.name);
+
+          // Remover mensagem de loading
+          if (uploadMessageKey) {
+            message.destroy(uploadMessageKey);
+          }
+
+          message.success(`${newImageUrls.length} imagem(ns) enviada(s) com sucesso!`);
         } catch (error) {
-          message.error('Erro no upload das imagens');
+          message.destroy(); // Remove qualquer mensagem de loading
+          console.error('Erro no upload das imagens:', error);
+          const errorMessage =
+            error instanceof Error ? error.message : 'Erro desconhecido no upload';
+          message.error(`Erro no upload das imagens: ${errorMessage}`);
+          setLoading(false);
           return;
         }
       }
@@ -208,6 +233,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         ...newImageUrls.map((url, index) => ({
           image_url: url,
           alt_text: `${values.name} - Nova Imagem ${index + 1}`,
+          order: existingImages.length + index + 1,
         })),
       ];
 
@@ -225,31 +251,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         message.success('Produto atualizado com sucesso!');
       } else {
         // Criar novo produto
-        const {
-          category_id,
-          name,
-          price,
-          description,
-          sku,
-          weight,
-          gold_purity,
-          stock_quantity,
-          is_active,
-          featured,
-        } = productData;
-
-        result = await createProduct(
-          category_id,
-          name,
-          price,
-          description,
-          sku,
-          weight,
-          gold_purity,
-          stock_quantity,
-          is_active,
-          featured
-        );
+        result = await createProduct(productData);
         message.success('Produto criado com sucesso!');
       }
 
@@ -257,10 +259,49 @@ const ProductModal: React.FC<ProductModalProps> = ({
       handleCancel();
     } catch (error: any) {
       console.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} produto:`, error);
-      message.error(error.message || `Erro ao ${isEditing ? 'atualizar' : 'criar'} produto`);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      message.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} produto: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Atualize também o beforeUpload para ser mais simples:
+  const beforeUpload = (file: RcFile): boolean => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const isImage = allowedTypes.includes(file.type);
+
+    if (!isImage) {
+      message.error('Apenas arquivos de imagem são permitidos! (JPEG, PNG, WebP)');
+      return false;
+    }
+
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('Imagem deve ser menor que 5MB!');
+      return false;
+    }
+
+    if (fileList.length >= 5) {
+      message.error('Máximo de 5 imagens permitidas!');
+      return false;
+    }
+
+    // Criar preview da imagem (não faz upload ainda)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const newFile: UploadFile = {
+        uid: `new-${Date.now()}-${Math.random()}`,
+        name: file.name,
+        status: 'done',
+        url: e.target?.result as string,
+        originFileObj: file as RcFile,
+      };
+      setFileList((prev) => [...prev, newFile]);
+    };
+    reader.readAsDataURL(file);
+
+    return false; // Previne upload automático do antd
   };
 
   const handleCancel = () => {
@@ -310,36 +351,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
     } finally {
       setSkuValidating(false);
     }
-  };
-
-  const beforeUpload = (file: RcFile) => {
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-      message.error('Apenas arquivos de imagem são permitidos!');
-      return false;
-    }
-
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Imagem deve ser menor que 2MB!');
-      return false;
-    }
-
-    // Criar preview da imagem
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const newFile: UploadFile = {
-        uid: Date.now().toString() + Math.random(),
-        name: file.name,
-        status: 'done',
-        url: e.target?.result as string,
-        originFileObj: file as RcFile,
-      };
-      setFileList((prev) => [...prev, newFile]);
-    };
-    reader.readAsDataURL(file);
-
-    return false; // Previne upload automático
   };
 
   const handleUploadChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {

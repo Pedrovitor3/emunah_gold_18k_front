@@ -1,140 +1,177 @@
 import type { AxiosResponse } from 'axios';
-import type { ApiResponse } from '../types';
 import { apiClient } from './baseService/axiosConfig';
-import type { ProductInterface } from '../interface/ProductInterface';
 
-export const createProduct = async (
-  category_id: string,
-  name: string,
-  price: number,
-  description?: string,
-  sku?: string,
-  weight?: number,
-  gold_purity?: string,
-  stock_quantity?: number,
-  is_active?: boolean,
-  featured?: boolean
-) => {
+interface CreateProductData {
+  category_id: string;
+  name: string;
+  description?: string;
+  sku: string;
+  price: number;
+  weight?: number;
+  gold_purity?: string;
+  stock_quantity?: number;
+  is_active?: boolean;
+  featured?: boolean;
+}
+
+interface UpdateProductData extends Partial<CreateProductData> {
+  id?: string;
+}
+
+// Criar produto (simplificado)
+export const createProduct = async (productData: CreateProductData) => {
   try {
-    const response: AxiosResponse = await apiClient.post('/products', {
-      category_id,
-      name,
-      description,
-      sku,
-      price,
-      weight,
-      gold_purity,
-      stock_quantity,
-      is_active,
-      featured,
-    });
+    const response = await apiClient.post('/products', productData);
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao criar produto:', error);
 
-    if (!response.data.success) {
-      throw new Error(response.data.error || 'Erro ao criar produto');
+    // Tratar diferentes tipos de erro
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
     }
 
-    return response.data.data;
-  } catch (error: any) {
-    console.log('erro ao criar produto', error);
-    throw error('erro ao criar produto', error);
+    if (error.response?.data?.errors) {
+      // Se há erros de validação específicos
+      const validationErrors = Object.values(error.response.data.errors).flat();
+      throw new Error(validationErrors.join(', '));
+    }
+
+    throw new Error(error.message || 'Erro ao criar produto');
   }
 };
 
-export const updateProduct = async (
-  id: string,
-  productData: {
-    category_id: string;
-    name: string;
-    price: number;
-    description?: string;
-    sku?: string;
-    weight?: number;
-    gold_purity?: string;
-    stock_quantity?: number;
-    is_active?: boolean;
-    featured?: boolean;
-    images?: Array<{
-      id?: string;
-      image_url: string;
-      alt_text: string;
-    }>;
-  }
-) => {
+// Atualizar produto
+export const updateProduct = async (productId: string, productData: UpdateProductData) => {
   try {
-    const response: AxiosResponse = await apiClient.put(`/products/${id}`, productData);
+    const response = await apiClient.put(`/products/${productId}`, productData);
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao atualizar produto:', error);
 
-    if (!response.data.success) {
-      throw new Error(response.data.error || 'Erro ao atualizar produto');
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
     }
 
-    return response.data.data;
-  } catch (error: any) {
-    console.log('erro ao atualizar produto', error);
-    throw new Error(error.response?.data?.message || 'Erro ao atualizar produto');
+    if (error.response?.data?.errors) {
+      const validationErrors = Object.values(error.response.data.errors).flat();
+      throw new Error(validationErrors.join(', '));
+    }
+
+    throw new Error(error.message || 'Erro ao atualizar produto');
   }
 };
 
+// Buscar produtos
+export const getProducts = async (params?: {
+  page?: number;
+  limit?: number;
+  category_id?: string;
+  search?: string;
+  is_active?: boolean;
+  featured?: boolean;
+}) => {
+  try {
+    const response = await apiClient.get('/products', { params });
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao buscar produtos:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao buscar produtos');
+  }
+};
+
+// Buscar produto por ID
+export const getProduct = async (id: string) => {
+  try {
+    const response = await apiClient.get(`/products/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao buscar produto:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao buscar produto');
+  }
+};
+
+// Deletar produto
 export const deleteProduct = async (id: string) => {
   try {
-    const response: AxiosResponse = await apiClient.delete(`/products/${id}`);
-
-    if (!response.data.success) {
-      throw new Error(response.data.error || 'Erro ao deletar produto');
-    }
-
-    return response.data.data;
+    const response = await apiClient.delete(`/products/${id}`);
+    return response.data;
   } catch (error: any) {
-    console.log('erro ao deletar produto', error);
+    console.error('Erro ao deletar produto:', error);
     throw new Error(error.response?.data?.message || 'Erro ao deletar produto');
   }
 };
 
-export const getProducts = async (params?: {
-  page?: number;
-  limit?: number;
-  category?: string;
-  featured?: boolean;
-  search?: string;
-}) => {
-  const queryParams = new URLSearchParams();
-
-  if (params?.page) queryParams.append('page', params.page.toString());
-  if (params?.limit) queryParams.append('limit', params.limit.toString());
-  if (params?.category) queryParams.append('category', params.category);
-  if (params?.featured) queryParams.append('featured', 'true');
-  if (params?.search) queryParams.append('search', params.search);
-
-  const response: AxiosResponse = await apiClient.get(`/products?${queryParams.toString()}`);
-
-  if (!response.data.success) {
-    throw new Error(response.data.error || 'Erro ao buscar produtos');
+// Deletar imagem específica do produto
+export const deleteProductImage = async (productId: string, imageId: string) => {
+  try {
+    const response = await apiClient.delete(`/products/${productId}/images/${imageId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao deletar imagem:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao deletar imagem');
   }
-
-  const productData = response.data || [];
-
-  return productData;
 };
 
-export const getProductById = async (id: string): Promise<ProductInterface> => {
-  const response: AxiosResponse<ApiResponse<ProductInterface>> = await apiClient.get(
-    `/products/${id}`
-  );
+// Reordenar imagens do produto
+export const reorderProductImages = async (
+  productId: string,
+  imageOrders: Array<{ id: string; order: number }>
+) => {
+  try {
+    const response = await apiClient.put(`/products/${productId}/images/reorder`, {
+      imageOrders,
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao reordenar imagens:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao reordenar imagens');
+  }
+};
+
+// Validar SKU
+export const validateSKU = async (sku: string, excludeProductId?: string) => {
+  try {
+    const response = await apiClient.post('/products/validate-sku', {
+      sku,
+      excludeProductId,
+    });
+    return response.data.isAvailable;
+  } catch (error: any) {
+    console.error('Erro ao validar SKU:', error);
+    return false;
+  }
+};
+
+// Buscar produtos por categoria
+export const getProductsByCategory = async (categoryId: string) => {
+  try {
+    const response = await apiClient.get(`/products/category/${categoryId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao buscar produtos da categoria:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao buscar produtos da categoria');
+  }
+};
+
+// Buscar produtos em destaque
+export const getFeaturedProducts = async (limit: number = 10) => {
+  try {
+    const response = await apiClient.get('/products/featured', {
+      params: { limit },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error('Erro ao buscar produtos em destaque:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao buscar produtos em destaque');
+  }
+};
+
+export const getProductById = async (id: string) => {
+  const response = await apiClient.get(`/products/${id}`);
 
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error || 'Produto não encontrado');
-  }
-
-  return response.data.data;
-};
-
-export const getFeaturedProducts = async (limit?: number): Promise<ProductInterface[]> => {
-  const queryParams = limit ? `?limit=${limit}` : '';
-  const response: AxiosResponse<ApiResponse<ProductInterface[]>> = await apiClient.get(
-    `/products/featured${queryParams}`
-  );
-
-  if (!response.data.success || !response.data.data) {
-    throw new Error(response.data.error || 'Erro ao buscar produtos em destaque');
   }
 
   return response.data.data;
