@@ -22,9 +22,19 @@ import { getCategories } from '../../../services/categoryService';
 import CreateCategoryModal from '../ModalCategory';
 import { createProduct, updateProduct } from '../../../services/productService';
 import type { ProductInterface } from '../../../interface/ProductInterface';
+<<<<<<< HEAD
 import type { RcFile } from 'antd/lib/upload';
 import type { UploadProgress } from '../../../interface/UploadInterface';
 import { uploadProductImages } from '../../../services/uploadService';
+=======
+import type { RcFile, UploadProps } from 'antd/lib/upload';
+import {
+  deleteProductImage,
+  getProductImages,
+  uploadFileToStorage,
+  uploadProductImages,
+} from '../../../services/productImageService';
+>>>>>>> a82c04f5f15be514a6e201a1af11c8f2e31d64f5
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -49,6 +59,13 @@ interface ProductModalProps {
   onSuccess: (product: any) => void;
   product?: ProductInterface | null; // Produto para edição (null/undefined para criação)
 }
+interface UploadImageInput {
+  product_id: string;
+  image_url: string;
+  alt_text: string;
+  is_primary: boolean;
+  sort_order: number;
+}
 
 const ProductModal: React.FC<ProductModalProps> = ({
   visible,
@@ -60,6 +77,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
   const [skuValidating, setSkuValidating] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
@@ -68,6 +86,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
   const modalTitle = isEditing ? 'Editar Produto' : 'Criar Novo Produto';
   const submitButtonText = isEditing ? 'Atualizar Produto' : 'Criar Produto';
   const loadingText = isEditing ? 'Atualizando...' : 'Criando...';
+
+  useEffect(() => {
+    if (isEditing && product?.id) {
+      loadExistingImages();
+    }
+  }, [isEditing, product]);
 
   useEffect(() => {
     if (visible) {
@@ -169,23 +193,94 @@ const ProductModal: React.FC<ProductModalProps> = ({
     }
   };
 
+  const loadExistingImages = async () => {
+    try {
+      if (product) {
+        const images = await getProductImages(product.id);
+        const existingFiles: UploadFile[] = images.map((img, index) => ({
+          uid: `existing-${img.id}`,
+          name: img.alt_text || `Imagem ${index + 1}`,
+          status: 'done',
+          url: img.image_url,
+          response: { url: img.image_url },
+        }));
+        setFileList(existingFiles);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar imagens existentes:', error);
+    }
+  };
+
+  const uploadProps: UploadProps = {
+    listType: 'picture-card',
+    fileList,
+    multiple: true,
+    beforeUpload: (file) => {
+      // Validações no frontend
+      const isValidType = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(
+        file.type
+      );
+      if (!isValidType) {
+        message.error('Apenas arquivos JPG, PNG e WEBP são permitidos!');
+        return false;
+      }
+
+      const isValidSize = file.size / 1024 / 1024 < 5; // 5MB
+      if (!isValidSize) {
+        message.error('O arquivo deve ter no máximo 5MB!');
+        return false;
+      }
+
+      // Impedir upload automático
+      return false;
+    },
+    onChange: ({ fileList: newFileList }) => {
+      setFileList(newFileList);
+    },
+    onRemove: async (file) => {
+      try {
+        // Se for uma imagem existente, deletar do servidor
+        if (file.uid.startsWith('existing-')) {
+          const imageId = file.uid.replace('existing-', '');
+          await deleteProductImage(imageId);
+          message.success('Imagem removida com sucesso!');
+        }
+        return true;
+      } catch (error) {
+        console.error('Erro ao remover imagem:', error);
+        message.error('Erro ao remover imagem');
+        return false;
+      }
+    },
+    customRequest: () => {
+      // Desabilitar upload automático
+    },
+  };
+
   const handleSubmit = async (values: CreateProductBody) => {
     try {
       setLoading(true);
 
-      // Separar imagens novas das existentes
+      // 1. Separar arquivos novos dos existentes
       const newImageFiles = fileList
         .filter((file) => file.originFileObj && !file.response?.url)
         .map((file) => file.originFileObj as File);
 
       const existingImages = fileList
         .filter((file) => file.response?.url || file.url)
-        .map((file) => ({
+        .map((file, index) => ({
           id: file.uid.startsWith('existing-') ? file.uid.replace('existing-', '') : undefined,
+<<<<<<< HEAD
           image_url: file.response?.url || file.url || '',
+=======
+          image_url: file.response?.url || file.url!,
+>>>>>>> a82c04f5f15be514a6e201a1af11c8f2e31d64f5
           alt_text: file.name || `${values.name} - Imagem`,
+          is_primary: index === 0, // Primeira imagem como principal
+          sort_order: index,
         }));
 
+<<<<<<< HEAD
       let newImageUrls: string[] = [];
 
       // Upload das imagens novas via backend
@@ -243,19 +338,84 @@ const ProductModal: React.FC<ProductModalProps> = ({
         images: allImages,
       };
 
+=======
+      // 2. Criar ou atualizar o produto
+>>>>>>> a82c04f5f15be514a6e201a1af11c8f2e31d64f5
       let result;
+      let productId: string;
 
       if (isEditing && product) {
-        // Atualizar produto existente
-        result = await updateProduct(product.id!, productData);
+        result = await updateProduct(product.id!, values);
+        productId = product.id!;
         message.success('Produto atualizado com sucesso!');
       } else {
+<<<<<<< HEAD
         // Criar novo produto
         result = await createProduct(productData);
+=======
+        const productData = {
+          category_id: values.category_id,
+          name: values.name,
+          price: values.price,
+          description: values.description,
+          sku: values.sku,
+          weight: values.weight,
+          gold_purity: values.gold_purity,
+          stock_quantity: values.stock_quantity,
+          is_active: values.is_active,
+          featured: values.featured,
+        };
+
+        result = await createProduct(productData);
+        productId = result.data.id; // Ajustar conforme estrutura da sua API
+>>>>>>> a82c04f5f15be514a6e201a1af11c8f2e31d64f5
         message.success('Produto criado com sucesso!');
       }
 
-      onSuccess(result || productData);
+      // 3. Processar novas imagens se existirem
+      if (newImageFiles.length > 0) {
+        try {
+          message.loading('Fazendo upload das imagens...', 0);
+
+          // Upload dos arquivos para obter URLs
+          const uploadPromises = newImageFiles.map(async (file, index) => {
+            try {
+              setUploadProgress((prev) => ({ ...prev, [file.name]: 0 }));
+
+              const url = await uploadFileToStorage(file);
+
+              setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
+
+              return {
+                product_id: productId,
+                image_url: url,
+                alt_text: `${values.name} - ${file.name}`,
+                is_primary: existingImages.length === 0 && index === 0,
+                sort_order: existingImages.length + index,
+              };
+            } catch (error) {
+              console.error(`Erro no upload de ${file.name}:`, error);
+              setUploadProgress((prev) => ({ ...prev, [file.name]: -1 }));
+              throw error;
+            }
+          });
+
+          const newImageData = await Promise.all(uploadPromises);
+
+          // Salvar registros das imagens no banco
+          await uploadProductImages(newImageData);
+
+          message.destroy(); // Remove loading message
+          message.success(`${newImageFiles.length} imagens processadas com sucesso!`);
+        } catch (error) {
+          message.destroy();
+          console.error('Erro ao processar imagens:', error);
+          message.warning('Produto salvo, mas houve erro ao processar algumas imagens');
+        }
+      }
+
+      // 4. Callback de sucesso
+      onSuccess(result || values);
       handleCancel();
     } catch (error: any) {
       console.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} produto:`, error);
@@ -263,6 +423,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       message.error(`Erro ao ${isEditing ? 'atualizar' : 'criar'} produto: ${errorMessage}`);
     } finally {
       setLoading(false);
+      setUploadProgress({});
     }
   };
 
