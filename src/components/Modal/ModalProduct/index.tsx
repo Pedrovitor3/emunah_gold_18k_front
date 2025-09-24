@@ -384,6 +384,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 <Form.Item
                   name="name"
                   label="Nome do Produto"
+                  initialValue={form.getFieldValue('name')}
                   rules={[
                     { required: true, message: 'Nome é obrigatório' },
                     { min: 3, message: 'Nome deve ter pelo menos 3 caracteres' },
@@ -430,6 +431,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 <Form.Item
                   name="category_id"
                   label="Categoria"
+                  initialValue={form.getFieldValue('category_id')}
                   rules={[{ required: true, message: 'Categoria é obrigatória' }]}
                 >
                   <Space.Compact style={{ width: '100%' }}>
@@ -438,6 +440,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
                       style={{ flex: 1 }}
                       showSearch
                       optionFilterProp="children"
+                      value={form.getFieldValue('category_id')}
+                      onChange={(value) => {
+                        form.setFieldValue('category_id', value);
+                      }}
                       filterOption={(input, option) =>
                         (option?.children as unknown as string)
                           ?.toLowerCase()

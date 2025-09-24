@@ -31,7 +31,8 @@ const Home: React.FC = () => {
   const loadFeaturedProducts = async () => {
     try {
       const products = await getFeaturedProducts(6);
-      setFeaturedProducts(products);
+      console.log('products', products);
+      setFeaturedProducts(products.data);
     } catch (error) {
       message.error('Erro ao carregar produtos em destaque');
     } finally {

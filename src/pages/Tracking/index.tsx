@@ -66,7 +66,7 @@ const Tracking: React.FC = () => {
   };
 
   const getStatusIcon = (status: string) => {
-    const statusLower = status.toLowerCase();
+    const statusLower = status?.toLowerCase();
 
     if (statusLower.includes('confirmado') || statusLower.includes('preparação')) {
       return <ClockCircleOutlined style={{ color: '#faad14' }} />;

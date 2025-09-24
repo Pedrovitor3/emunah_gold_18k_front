@@ -144,7 +144,7 @@ const ProductsPage: React.FC = () => {
   ];
 
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = product.name?.toLowerCase().includes(searchTerm?.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || product.category.id === selectedCategory;
     return matchesSearch && matchesCategory;
   });
