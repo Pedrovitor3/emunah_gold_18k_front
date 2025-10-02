@@ -16,15 +16,14 @@ import {
   Tooltip,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
+import type { UploadFile } from 'antd/es/upload/interface';
 import type CategoryInterface from '../../../interface/CategoryInterface';
 import { getCategories } from '../../../services/categoryService';
 import CreateCategoryModal from '../ModalCategory';
 import { createProduct, updateProduct } from '../../../services/productService';
 import type { ProductInterface } from '../../../interface/ProductInterface';
 import type { RcFile } from 'antd/lib/upload';
-import type { UploadProgress } from '../../../interface/UploadInterface';
-import { uploadProductImages } from '../../../services/uploadService';
+import { uploadFileToBackend, uploadProductImages } from '../../../services/uploadService';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -227,12 +226,26 @@ const ProductModal: React.FC<ProductModalProps> = ({
       if (newImageFiles.length > 0) {
         try {
           const uploadMessageKey = message.loading('Iniciando upload das imagens...', 0);
-
-          // Fazer upload via backend
-          newImageUrls = await uploadProductImages(newImageFiles, values.name);
-
-          //       message.destroy(uploadMessageKey);
-          message.success(`${newImageUrls.length} imagem(ns) enviada(s) com sucesso!`);
+          console.log('uploadMessageKey', uploadMessageKey);
+          // Se for apenas 1 arquivo, usar rota single
+          if (newImageFiles.length === 1) {
+            const result = await uploadFileToBackend(newImageFiles[0], {
+              folder: 'products',
+              onProgress: (progress) => {
+                setUploadProgress({
+                  [newImageFiles[0].name]: progress.percentage,
+                });
+              },
+            });
+            newImageUrls = [result.url];
+            // message.destroy(uploadMessageKey);
+            message.success('Imagem enviada com sucesso!');
+          } else {
+            // Se forem múltiplos arquivos, usar rota de múltiplos uploads
+            newImageUrls = await uploadProductImages(newImageFiles, values.name);
+            // message.destroy(uploadMessageKey);
+            message.success(`${newImageUrls.length} imagens enviadas com sucesso!`);
+          }
         } catch (error) {
           message.destroy();
           console.error('Erro no upload das imagens:', error);
